@@ -22,19 +22,20 @@
 
 ### 🔌 Multi-Provider Architecture
 
-- **PyMuPDF4LLM** - Lightning-fast PDF processing (included by default)
-- **PyTesseract** - OCR for scanned documents
-- **OCRmyPDF** - Advanced OCR with PDF optimization
-- **Mistral OCR** - AI-powered OCR and analysis
-- **LlamaParse** - Deep document understanding with LLMs
+- **PyMuPDF4LLM** - Lightning-fast PDF processing (✅ Implemented)
+- **PyTesseract** - OCR for scanned documents (🔄 Planned)
+- **OCRmyPDF** - Advanced OCR with PDF optimization (🔄 Planned)
+- **Mistral OCR** - AI-powered OCR and analysis (🔄 Planned)
+- **LlamaParse** - Deep document understanding with LLMs (🔄 Planned)
 
 ### 🚀 Key Benefits
 
-- **Universal Format Support** - PDFs, images, Office docs, and more
+- **Universal Format Support** - PDFs, XPS, EPUB, CBZ, SVG (more formats coming)
+- **Local & Remote Files** - Support for URLs, absolute paths, relative paths, and ~ paths
 - **Intelligent Provider Selection** - Automatically chooses the best tool for each document
-- **High Performance** - Built-in caching and parallel processing
+- **High Performance** - Built-in caching with TTL support
 - **Production Ready** - Comprehensive error handling and logging
-- **Easy Integration** - Works seamlessly with Claude Desktop and other MCP clients
+- **Easy Integration** - Works seamlessly with Cursor, Claude Desktop and other MCP clients
 
 ## 📦 Installation
 
@@ -74,7 +75,7 @@ Add to your Cursor MCP settings:
   "mcpServers": {
     "docsray": {
       "command": "python",
-      "args": ["-m", "docsray.server"],
+      "args": ["-m", "docsray.cli", "start"],
       "env": {
         "DOCSRAY_PYMUPDF_ENABLED": "true"
       }
@@ -91,8 +92,8 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 {
   "mcpServers": {
     "docsray": {
-      "command": "uvx",
-      "args": ["docsray-mcp"],
+      "command": "docsray",
+      "args": ["start"],
       "env": {
         "DOCSRAY_PYMUPDF_ENABLED": "true"
       }
@@ -101,18 +102,19 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 }
 ```
 
-### With API Keys (for AI providers)
+### With API Keys (for future AI providers)
 
 ```json
 {
   "mcpServers": {
     "docsray": {
-      "command": "uvx",
-      "args": ["docsray-mcp"],
+      "command": "docsray",
+      "args": ["start"],
       "env": {
-        "DOCSRAY_MISTRAL_ENABLED": "true",
+        "DOCSRAY_PYMUPDF_ENABLED": "true",
+        "DOCSRAY_MISTRAL_ENABLED": "false",
         "DOCSRAY_MISTRAL_API_KEY": "your-mistral-api-key",
-        "DOCSRAY_LLAMAPARSE_ENABLED": "true",
+        "DOCSRAY_LLAMAPARSE_ENABLED": "false",
         "DOCSRAY_LLAMAPARSE_API_KEY": "your-llamaparse-api-key"
       }
     }
@@ -178,13 +180,15 @@ result = await use_mcp_tool("docsray", "docsray_map", {
 })
 ```
 
-### AI-Powered Analysis
+### AI-Powered Analysis (Coming Soon)
 
 ```python
+# Note: xray endpoint currently returns a placeholder
+# Full AI analysis will be available when AI providers are implemented
 result = await use_mcp_tool("docsray", "docsray_xray", {
   "document_url": "https://example.com/research-paper.pdf",
   "analysis_type": ["entities", "key-points", "sentiment"],
-  "provider": "mistral-ocr"
+  "provider": "mistral-ocr"  # Future provider
 })
 ```
 
@@ -253,13 +257,13 @@ docsray start --transport http --port 8080
 
 ## 📊 Provider Comparison
 
-| Provider | Formats | OCR | AI Analysis | Speed | Best For |
-|----------|---------|-----|-------------|-------|----------|
-| PyMuPDF4LLM | PDF, XPS, EPUB | ❌ | ❌ | ⚡⚡⚡ | Fast text extraction |
-| PyTesseract | Images, PDF | ✅ | ❌ | ⚡ | Scanned documents |
-| OCRmyPDF | PDF | ✅ | ❌ | ⚡⚡ | PDF optimization |
-| Mistral OCR | PDF, Images, DOCX | ✅ | ✅ | ⚡⚡ | Complex layouts |
-| LlamaParse | PDF, DOCX, PPTX | ✅ | ✅ | ⚡ | Deep understanding |
+| Provider | Formats | OCR | AI Analysis | Speed | Status | Best For |
+|----------|---------|-----|-------------|-------|--------|----------|
+| PyMuPDF4LLM | PDF, XPS, EPUB, CBZ, SVG | ❌ | ❌ | ⚡⚡⚡ | ✅ Implemented | Fast text extraction |
+| PyTesseract | Images, PDF | ✅ | ❌ | ⚡ | 🔄 Planned | Scanned documents |
+| OCRmyPDF | PDF | ✅ | ❌ | ⚡⚡ | 🔄 Planned | PDF optimization |
+| Mistral OCR | PDF, Images, DOCX | ✅ | ✅ | ⚡⚡ | 🔄 Planned | Complex layouts |
+| LlamaParse | PDF, DOCX, PPTX | ✅ | ✅ | ⚡ | 🔄 Planned | Deep understanding |
 
 ## 🔧 Advanced Features
 
@@ -310,7 +314,11 @@ ruff check src/
 
 ## 🛣️ Roadmap
 
-- [x] Phase 1: Core MCP server with PyMuPDF4LLM
+- [x] Phase 1: Core MCP server with PyMuPDF4LLM ✅ Complete
+  - [x] All 5 tool endpoints (seek, peek, map, xray, extract)
+  - [x] Local and remote file support
+  - [x] Caching system
+  - [x] Provider registry
 - [ ] Phase 2: OCR providers (PyTesseract, OCRmyPDF)
 - [ ] Phase 3: AI providers (Mistral, LlamaParse)
 - [ ] Phase 4: Advanced features (streaming, batch processing)
@@ -323,8 +331,8 @@ Apache License 2.0 - see [LICENSE](LICENSE) for details.
 ## 🙏 Acknowledgments
 
 Built with:
-- [FastMCP](https://github.com/anthropics/fastmcp) - Rapid MCP server development
-- [PyMuPDF4LLM](https://github.com/pymupdf/pymupdf4llm) - PDF processing
+- [FastMCP](https://github.com/anthropics/fastmcp) v2.11.1 - Rapid MCP server development
+- [PyMuPDF4LLM](https://github.com/pymupdf/pymupdf4llm) v0.0.17+ - PDF processing
 - [Model Context Protocol](https://github.com/anthropics/mcp) - AI integration standard
 
 ## 📞 Support

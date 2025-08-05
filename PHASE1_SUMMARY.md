@@ -7,7 +7,7 @@ Phase 1 of the Docsray MCP server has been successfully implemented and is now *
 ## Completed Components
 
 ### 1. **Core MCP Server Implementation**
-- Built on FastMCP v0.6.0+ for robust MCP protocol support
+- Built on FastMCP v2.11.1 for robust MCP protocol support
 - Supports both stdio and HTTP transport modes
 - Comprehensive configuration system via environment variables
 - Proper async/await patterns throughout

@@ -7,7 +7,7 @@
 Navigate to specific pages or sections within documents.
 
 **Parameters:**
-- `document_url` (string, required): URL or path to the document
+- `document_url` (string, required): URL or file path (absolute, relative, or ~) to the document
 - `target` (object, required): Navigation target
   - `page` (integer): Page number (1-based)
   - `section` (string): Section title
@@ -37,7 +37,7 @@ Navigate to specific pages or sections within documents.
 Get document structure, metadata, and overview without full extraction.
 
 **Parameters:**
-- `document_url` (string, required): URL or path to the document
+- `document_url` (string, required): URL or file path (absolute, relative, or ~) to the document
 - `depth` (string, default: "structure"): Level of detail
   - `metadata`: Basic document info only
   - `structure`: Include document structure
@@ -73,7 +73,7 @@ Get document structure, metadata, and overview without full extraction.
 Generate comprehensive document structure map.
 
 **Parameters:**
-- `document_url` (string, required): URL or path to the document
+- `document_url` (string, required): URL or file path (absolute, relative, or ~) to the document
 - `include_content` (boolean, default: false): Include content snippets
 - `analysis_depth` (string, default: "deep"): Analysis depth level
   - `shallow`: Basic structure only
@@ -109,10 +109,10 @@ Generate comprehensive document structure map.
 
 ### docsray_xray
 
-Perform deep AI-powered document analysis.
+Perform deep AI-powered document analysis (Note: Currently returns placeholder - full AI analysis coming with AI provider implementation).
 
 **Parameters:**
-- `document_url` (string, required): URL or path to the document
+- `document_url` (string, required): URL or file path (absolute, relative, or ~) to the document
 - `analysis_type` (array, default: ["entities", "key-points"]): Types of analysis
   - `entities`: Extract named entities
   - `relationships`: Find entity relationships
@@ -144,7 +144,7 @@ Perform deep AI-powered document analysis.
 Extract specific content or data from documents.
 
 **Parameters:**
-- `document_url` (string, required): URL or path to the document
+- `document_url` (string, required): URL or file path (absolute, relative, or ~) to the document
 - `extraction_targets` (array, default: ["text"]): Content to extract
   - `text`: Document text
   - `tables`: Table data
@@ -175,27 +175,27 @@ Extract specific content or data from documents.
 
 ## Provider Capabilities
 
-### pymupdf4llm
+### pymupdf4llm (✅ Implemented)
 - **Formats**: pdf, xps, epub, cbz, svg
 - **Features**: tables, images, forms, multi-language
 - **Best for**: Fast extraction, structured PDFs
 
-### pytesseract
+### pytesseract (🔄 Planned)
 - **Formats**: png, jpg, pdf
 - **Features**: OCR, multi-language
 - **Best for**: Scanned documents
 
-### ocrmypdf
+### ocrmypdf (🔄 Planned)
 - **Formats**: pdf
 - **Features**: Advanced OCR, PDF/A conversion
 - **Best for**: OCR with PDF optimization
 
-### mistral-ocr
+### mistral-ocr (🔄 Planned)
 - **Formats**: pdf, png, jpg, docx, pptx
 - **Features**: AI-powered OCR, custom instructions
 - **Best for**: Complex layouts, handwriting
 
-### llama-parse
+### llama-parse (🔄 Planned)
 - **Formats**: pdf, docx, pptx, html
 - **Features**: AI analysis, entity extraction
 - **Best for**: Deep document understanding

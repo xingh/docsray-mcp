@@ -72,7 +72,27 @@ docsray start
 docsray start --transport http --port 3000
 ```
 
-## Claude Desktop Integration
+## MCP Client Integration
+
+### Cursor (Confirmed Working ✅)
+
+Add to your Cursor MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "docsray": {
+      "command": "python",
+      "args": ["-m", "docsray.cli", "start"],
+      "env": {
+        "DOCSRAY_PYMUPDF_ENABLED": "true"
+      }
+    }
+  }
+}
+```
+
+### Claude Desktop
 
 Add to your Claude Desktop configuration:
 
@@ -95,9 +115,9 @@ Add to your Claude Desktop configuration:
 ### Extract Text from PDF
 
 ```typescript
-// In Claude
+// Supports both local files and URLs
 const result = await use_mcp_tool("docsray", "docsray_extract", {
-  document_url: "/path/to/document.pdf",
+  document_url: "./documents/report.pdf",  // or "https://example.com/doc.pdf"
   extraction_targets: ["text"],
   output_format: "markdown"
 });
