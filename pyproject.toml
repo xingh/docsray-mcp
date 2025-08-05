@@ -1,0 +1,137 @@
+[project]
+name = "docsray-mcp"
+version = "0.1.0"
+description = "Advanced document perception MCP server with multiple backend support"
+authors = [
+    {name = "Docsray Team", email = "team@docsray.dev"}
+]
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.9"
+keywords = ["mcp", "document", "ocr", "pdf", "ai", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastmcp>=0.6.0",
+    "pymupdf4llm>=0.0.17",
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "typing-extensions>=4.0.0",
+    "aiofiles>=24.0.0",
+    "click>=8.0.0",
+    "nest-asyncio>=1.5.0",
+]
+
+[project.optional-dependencies]
+ocr = [
+    "pytesseract>=0.3.10",
+    "ocrmypdf>=16.0.0",
+    "pillow>=10.0.0",
+]
+ai = [
+    "mistralai>=1.0.0",
+    "llama-parse>=0.6.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "black>=24.0.0",
+    "ruff>=0.5.0",
+    "mypy>=1.0.0",
+    "types-aiofiles",
+]
+all = ["docsray-mcp[ocr,ai,dev]"]
+
+[project.scripts]
+docsray = "docsray.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/docsray/docsray-mcp"
+Documentation = "https://docs.docsray.dev"
+Repository = "https://github.com/docsray/docsray-mcp"
+Issues = "https://github.com/docsray/docsray-mcp/issues"
+
+[build-system]
+requires = ["setuptools>=69.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+fix = true
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+    "ARG",  # flake8-unused-arguments
+    "SIM",  # flake8-simplify
+]
+ignore = [
+    "E501",  # line too long
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+follow_imports = "normal"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = [
+    "--cov=docsray",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "-v",
+]
+
+[tool.coverage.run]
+source = ["src/docsray"]
+omit = ["*/tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]

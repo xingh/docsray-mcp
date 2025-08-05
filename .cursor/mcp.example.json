@@ -1,0 +1,90 @@
+{
+    "mcpServers": {
+      "docsray": {
+        "command": "python",
+        "args": ["-m", "docsray.cli", "start"],
+        "env": {
+          "DOCSRAY_TRANSPORT": "stdio",
+          "DOCSRAY_LOG_LEVEL": "DEBUG",
+          "DOCSRAY_DEFAULT_PROVIDER": "auto",
+          "DOCSRAY_PYMUPDF_ENABLED": "true",
+          "DOCSRAY_PYTESSERACT_ENABLED": "false",
+          "DOCSRAY_OCRMYPDF_ENABLED": "false",
+          "DOCSRAY_MISTRAL_ENABLED": "false",
+          "DOCSRAY_LLAMAPARSE_ENABLED": "false",
+          "DOCSRAY_CACHE_ENABLED": "true",
+          "DOCSRAY_CACHE_TTL": "3600",
+          "DOCSRAY_MAX_CONCURRENT_REQUESTS": "10",
+          "DOCSRAY_TIMEOUT_SECONDS": "120"
+        }
+      },
+      "docsray-ocr": {
+        "command": "python",
+        "args": ["-m", "docsray.cli", "start"],
+        "env": {
+          "DOCSRAY_TRANSPORT": "stdio",
+          "DOCSRAY_LOG_LEVEL": "INFO",
+          "DOCSRAY_DEFAULT_PROVIDER": "auto",
+          "DOCSRAY_PYMUPDF_ENABLED": "true",
+          "DOCSRAY_PYTESSERACT_ENABLED": "true",
+          "DOCSRAY_OCRMYPDF_ENABLED": "true",
+          "DOCSRAY_MISTRAL_ENABLED": "false",
+          "DOCSRAY_LLAMAPARSE_ENABLED": "false",
+          "DOCSRAY_TESSERACT_LANGUAGES": "eng,fra,deu,spa",
+          "DOCSRAY_CACHE_ENABLED": "true"
+        }
+      },
+      "docsray-ai": {
+        "command": "python",
+        "args": ["-m", "docsray.cli", "start"],
+        "env": {
+          "DOCSRAY_TRANSPORT": "stdio",
+          "DOCSRAY_LOG_LEVEL": "INFO",
+          "DOCSRAY_DEFAULT_PROVIDER": "auto",
+          "DOCSRAY_PYMUPDF_ENABLED": "true",
+          "DOCSRAY_PYTESSERACT_ENABLED": "false",
+          "DOCSRAY_OCRMYPDF_ENABLED": "false",
+          "DOCSRAY_MISTRAL_ENABLED": "true",
+          "DOCSRAY_LLAMAPARSE_ENABLED": "true",
+          "DOCSRAY_MISTRAL_API_KEY": "your-mistral-api-key-here",
+          "DOCSRAY_LLAMAPARSE_API_KEY": "your-llamaparse-api-key-here",
+          "DOCSRAY_LLAMAPARSE_MODE": "balanced",
+          "DOCSRAY_CACHE_ENABLED": "true"
+        }
+      },
+      "docsray-http": {
+        "command": "python",
+        "args": ["-m", "docsray.cli", "start", "--transport", "http", "--port", "3000"],
+        "env": {
+          "DOCSRAY_TRANSPORT": "http",
+          "DOCSRAY_HTTP_PORT": "3000",
+          "DOCSRAY_HTTP_HOST": "127.0.0.1",
+          "DOCSRAY_LOG_LEVEL": "INFO",
+          "DOCSRAY_DEFAULT_PROVIDER": "auto",
+          "DOCSRAY_PYMUPDF_ENABLED": "true",
+          "DOCSRAY_PYTESSERACT_ENABLED": "false",
+          "DOCSRAY_OCRMYPDF_ENABLED": "false",
+          "DOCSRAY_MISTRAL_ENABLED": "false",
+          "DOCSRAY_LLAMAPARSE_ENABLED": "false",
+          "DOCSRAY_CACHE_ENABLED": "true"
+        }
+      },
+      "docsray-dev": {
+        "command": "python",
+        "args": ["-m", "docsray.cli", "start", "--verbose"],
+        "env": {
+          "DOCSRAY_TRANSPORT": "stdio",
+          "DOCSRAY_LOG_LEVEL": "DEBUG",
+          "DOCSRAY_DEFAULT_PROVIDER": "pymupdf4llm",
+          "DOCSRAY_PYMUPDF_ENABLED": "true",
+          "DOCSRAY_PYTESSERACT_ENABLED": "false",
+          "DOCSRAY_OCRMYPDF_ENABLED": "false",
+          "DOCSRAY_MISTRAL_ENABLED": "false",
+          "DOCSRAY_LLAMAPARSE_ENABLED": "false",
+          "DOCSRAY_CACHE_ENABLED": "false",
+          "DOCSRAY_TIMEOUT_SECONDS": "300"
+        }
+      }
+    }
+  }
+  
