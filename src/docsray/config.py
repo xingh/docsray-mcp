@@ -57,13 +57,13 @@ class MistralOCRConfig(BaseModel):
 class LlamaParseConfig(BaseModel):
     enabled: bool = Field(default=False)
     api_key: Optional[str] = Field(default=None)
-    parsing_mode: str = Field(default="balanced")
+    mode: str = Field(default="balanced")
 
-    @field_validator("parsing_mode")
+    @field_validator("mode")
     @classmethod
-    def validate_parsing_mode(cls, v: str) -> str:
+    def validate_mode(cls, v: str) -> str:
         if v not in ["fast", "balanced", "premium"]:
-            raise ValueError("parsing_mode must be 'fast', 'balanced', or 'premium'")
+            raise ValueError("mode must be 'fast', 'balanced', or 'premium'")
         return v
 
 
@@ -121,7 +121,7 @@ class DocsrayConfig(BaseModel):
                 "llama_parse": {
                     "enabled": os.getenv("DOCSRAY_LLAMAPARSE_ENABLED", "false").lower() == "true",
                     "api_key": os.getenv("DOCSRAY_LLAMAPARSE_API_KEY"),
-                    "parsing_mode": os.getenv("DOCSRAY_LLAMAPARSE_MODE", "balanced"),
+                    "mode": os.getenv("DOCSRAY_LLAMAPARSE_MODE", "balanced"),
                 },
             },
             "performance": {

@@ -2,6 +2,8 @@
 
 import hashlib
 import logging
+import os
+import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -132,10 +134,12 @@ class PyMuPDF4LLMProvider(DocumentProvider):
 
         try:
             # Extract full document with chunks
+            # Note: write_images saves to current directory, so we disable it for now
+            # TODO: Configure image output directory or handle images differently
             chunks = pymupdf4llm.to_markdown(
                 str(doc_path),
                 page_chunks=True,
-                write_images=True,
+                write_images=False,  # Disabled to prevent cluttering root directory
                 extract_words=True
             )
 
@@ -275,7 +279,7 @@ class PyMuPDF4LLMProvider(DocumentProvider):
             # Configure extraction
             extract_kwargs = {
                 "page_chunks": True,
-                "write_images": "images" in extraction_targets,
+                "write_images": False,  # We'll handle images separately if needed
                 "extract_words": True,
             }
 
@@ -283,8 +287,28 @@ class PyMuPDF4LLMProvider(DocumentProvider):
                 # Convert to 0-based page numbers
                 extract_kwargs["pages"] = [p - 1 for p in pages]
 
-            # Extract content
-            chunks = pymupdf4llm.to_markdown(str(doc_path), **extract_kwargs)
+            # If images are requested, extract in a temporary directory
+            if "images" in extraction_targets:
+                with tempfile.TemporaryDirectory(prefix="pymupdf_images_") as temp_dir:
+                    # Save current directory
+                    original_dir = os.getcwd()
+                    try:
+                        # Change to temp directory for image extraction
+                        os.chdir(temp_dir)
+                        extract_kwargs["write_images"] = True
+                        chunks = pymupdf4llm.to_markdown(str(doc_path), **extract_kwargs)
+                        
+                        # Collect image files created
+                        image_files = list(Path(temp_dir).glob("*.png"))
+                        logger.info(f"Extracted {len(image_files)} images to temporary directory")
+                        
+                        # TODO: Process images if needed (e.g., move to cache)
+                    finally:
+                        # Always restore original directory
+                        os.chdir(original_dir)
+            else:
+                # Extract without images
+                chunks = pymupdf4llm.to_markdown(str(doc_path), **extract_kwargs)
 
             # Process based on output format
             if output_format == "markdown":

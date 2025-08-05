@@ -82,15 +82,15 @@ class TestProviderConfigs:
         config = LlamaParseConfig(
             enabled=True,
             api_key="test-key",
-            parsing_mode="premium"
+            mode="premium"
         )
         assert config.enabled is True
         assert config.api_key == "test-key"
-        assert config.parsing_mode == "premium"
+        assert config.mode == "premium"
     
     def test_llama_parse_invalid_mode(self):
         with pytest.raises(ValueError):
-            LlamaParseConfig(parsing_mode="invalid")
+            LlamaParseConfig(mode="invalid")
 
 
 class TestDocsrayConfig:
@@ -159,4 +159,4 @@ class TestDocsrayConfig:
         # LlamaParse
         assert config.providers.llama_parse.enabled is True
         assert config.providers.llama_parse.api_key == "test-llama-key"
-        assert config.providers.llama_parse.parsing_mode == "fast"
+        assert config.providers.llama_parse.mode == "fast"

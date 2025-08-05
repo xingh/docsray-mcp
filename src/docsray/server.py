@@ -179,6 +179,18 @@ class DocsrayServer:
             except Exception as e:
                 logger.error(f"Failed to initialize PyMuPDF4LLM provider: {e}")
 
+        # LlamaParse provider
+        if self.config.providers.llama_parse.enabled:
+            try:
+                from .providers.llamaparse import LlamaParseProvider
+                provider = LlamaParseProvider()
+                # Store config for lazy initialization
+                provider.config = self.config.providers.llama_parse
+                self.registry.register(provider)
+                logger.info("LlamaParse provider registered (will initialize on first use)")
+            except Exception as e:
+                logger.error(f"Failed to register LlamaParse provider: {e}")
+
         # Log available providers
         providers = self.registry.list_providers()
         logger.info(f"Available providers: {', '.join(providers)}")

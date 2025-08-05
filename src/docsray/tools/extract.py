@@ -36,7 +36,7 @@ async def handle_extract(
     """
     try:
         # Validate extraction targets
-        valid_targets = ["text", "tables", "images", "forms", "metadata", "equations"]
+        valid_targets = ["text", "tables", "images", "forms", "metadata", "equations", "layout"]
         invalid_targets = [t for t in extraction_targets if t not in valid_targets]
         if invalid_targets:
             return {
