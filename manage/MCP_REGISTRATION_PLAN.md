@@ -22,7 +22,7 @@ This document outlines the comprehensive plan for registering and announcing the
   "description": "Advanced document perception MCP server with comprehensive extraction and multi-provider support",
   "author": "Docsray Team",
   "repository": "https://github.com/docsray/docsray-mcp",
-  "homepage": "https://docsray.io",
+  "homepage": "https://docsray.dev",
   "license": "Apache",
   "categories": ["documents", "pdf", "ocr", "ai", "analysis", "extraction", "tables", "images"],
   "capabilities": {
@@ -75,7 +75,7 @@ twine upload dist/*
   - Links to docs
 
 ### Documentation Website
-- **Domain**: https://docs.docsray.ai
+- **Domain**: https://docsray.dev
 - **Sections**:
   - Getting Started
   - Provider Guide
