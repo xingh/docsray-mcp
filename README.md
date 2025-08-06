@@ -5,6 +5,7 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://github.com/anthropics/mcp)
 [![Status](https://img.shields.io/badge/Status-Working-brightgreen.svg)](https://github.com/docsray/docsray-mcp)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/6065d1ba-7e6c-49fa-a97e-9cada2cbc00a/deploy-status)](https://app.netlify.com/projects/docsray/deploys)
 
 **Docsray** is a powerful Model Context Protocol (MCP) server that gives AI assistants like Claude advanced document perception capabilities. Extract text, navigate pages, analyze structure, and understand any document with ease.
 
