@@ -64,8 +64,8 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "docsray": {
-      "command": "python",
-      "args": ["-m", "docsray.server"],
+      "command": "uvx",
+      "args": ["--from", "docsray-mcp", "docsray"],
       "env": {
         "LLAMAPARSE_API_KEY": "your-api-key-here"
       }
@@ -81,8 +81,25 @@ Edit `%APPDATA%\Claude\claude_desktop_config.json`:
 {
   "mcpServers": {
     "docsray": {
-      "command": "python",
-      "args": ["-m", "docsray.server"],
+      "command": "uvx",
+      "args": ["--from", "docsray-mcp", "docsray"],
+      "env": {
+        "LLAMAPARSE_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+### Alternative: Using pip installation
+If you installed with pip and want to use the Python module directly:
+
+```json
+{
+  "mcpServers": {
+    "docsray": {
+      "command": "docsray",
+      "args": [],
       "env": {
         "LLAMAPARSE_API_KEY": "your-api-key-here"
       }
@@ -120,13 +137,15 @@ DOCSRAY_CACHE_DIR=.docsray  # Custom cache directory
 
 ### Provider Selection
 
-```python
+In Claude or your MCP client, you can specify providers:
+
+```text
 # Force specific provider
-docsray.xray("document.pdf", provider="llama-parse")
-docsray.peek("document.pdf", provider="pymupdf4llm")
+"Xray document.pdf with provider llama-parse"
+"Peek at document.pdf using provider pymupdf4llm"
 
 # Let Docsray choose (default)
-docsray.xray("document.pdf")  # Auto-selects best provider
+"Xray document.pdf"  # Auto-selects best provider
 ```
 
 ## Troubleshooting

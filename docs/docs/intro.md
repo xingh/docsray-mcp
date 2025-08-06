@@ -33,14 +33,15 @@ Extract ALL data from documents with a single command:
 
 ## Quick Example
 
-```python
-# Extract EVERYTHING from a document
-result = docsray.xray("document.pdf", provider="llama-parse")
+```text
+# In Claude Desktop or Cursor, ask:
+"Xray document.pdf with provider llama-parse"
 
-# Access comprehensive data
-entities = result['analysis']['extracted_content']['entities']
-tables = result['analysis']['full_extraction']['tables']
-images = result['analysis']['full_extraction']['images']
+# Claude will use Docsray to extract:
+- All entities (people, organizations, dates, amounts)
+- All tables with complete structure
+- All images with descriptions
+- Complete document hierarchy
 ```
 
 ## Five Powerful Tools

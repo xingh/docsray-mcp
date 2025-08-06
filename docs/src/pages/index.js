@@ -34,8 +34,11 @@ function HomepageHeader() {
 {`# Install
 pip install docsray-mcp
 
-# Extract EVERYTHING from a document
-mcp docsray xray document.pdf --provider llama-parse --comprehensive`}
+# Run with uvx (recommended for MCP clients)
+uvx --from docsray-mcp docsray
+
+# Configure in Claude Desktop or Cursor, then use:
+"Xray document.pdf with provider llama-parse"`}
             </code>
           </pre>
         </div>
@@ -88,15 +91,11 @@ export default function Home() {
           <div className="container">
             <h2>Maximum Data Extraction</h2>
             <div className="extraction-demo">
-              <h3>Get EVERYTHING with one command:</h3>
+              <h3>Get EVERYTHING with one prompt in Claude:</h3>
               <pre>
-                <code className="language-python">
-{`# The ultimate extraction prompt for LlamaParse
-result = docsray.xray(
-    "document.pdf",
-    provider="llama-parse",
-    custom_instructions="""
-    Extract ALL possible information including:
+                <code className="language-text">
+{`# Ask Claude to analyze your document:
+"Xray document.pdf with provider llama-parse and extract:
     1) Complete text content preserving exact formatting
     2) All tables with complete data and structure
     3) All images with descriptions and metadata

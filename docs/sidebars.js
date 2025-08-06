@@ -21,6 +21,7 @@ const sidebars = {
       items: [
         'getting-started/installation',
         'getting-started/quickstart',
+        'getting-started/how-it-works',
         'getting-started/configuration',
       ],
     },

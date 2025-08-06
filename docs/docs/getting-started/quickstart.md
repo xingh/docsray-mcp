@@ -6,18 +6,20 @@ sidebar_position: 2
 
 Get started with Docsray in 5 minutes! This guide will walk you through basic usage and show you how to extract everything from documents.
 
+> **Important:** Docsray is an MCP server that works through Claude Desktop or other MCP clients. The commands shown below are what you **type in Claude**, not in your terminal. See [How It Works](./how-it-works) for details.
+
 ## Your First Document Analysis
 
 ### 1. Quick Overview (Peek)
 
-Start by getting a quick overview of any document:
+Start by getting a quick overview of any document in Claude:
 
-```python
+```text
 # Local file
-"Peek at ./invoice.pdf"
+Peek at ./invoice.pdf
 
 # URL
-"Peek at https://example.com/document.pdf"
+Peek at https://example.com/document.pdf
 ```
 
 Response shows:
@@ -30,8 +32,8 @@ Response shows:
 
 Use the power of AI to extract ALL data:
 
-```python
-"Xray invoice.pdf with provider llama-parse"
+```text
+Xray invoice.pdf with provider llama-parse
 ```
 
 This returns:
@@ -45,23 +47,22 @@ This returns:
 
 Extract content in your preferred format:
 
-```python
+```text
 # As markdown
-"Extract pages 1-5 from report.pdf as markdown"
+Extract pages 1-5 from report.pdf as markdown
 
 # As JSON with tables
-"Extract all tables from financial.pdf as JSON"
+Extract all tables from financial.pdf as JSON
 
 # Specific pages
-"Extract page 3 from contract.pdf"
+Extract page 3 from contract.pdf
 ```
 
 ## Maximum Extraction Example
 
-Here's how to get EVERYTHING from a document:
+Here's how to get EVERYTHING from a document in Claude:
 
-```python
-"""
+```text
 Xray document.pdf with provider llama-parse and custom instructions: 
 'Extract ALL possible information including: 
 1) Complete text content preserving exact formatting
@@ -71,49 +72,48 @@ Xray document.pdf with provider llama-parse and custom instructions:
 5) Full document structure
 6) All entities (people, orgs, dates, amounts)
 7) Page-by-page layout information'
-"""
 ```
 
 ## Common Use Cases
 
 ### Legal Document Analysis
 
-```python
+```text
 # Extract all parties and terms
-"Xray contract.pdf and extract all parties, dates, and obligations"
+Xray contract.pdf and extract all parties, dates, and obligations
 
 # Find specific clauses
-"Seek to 'termination clause' in agreement.pdf"
+Seek to 'termination clause' in agreement.pdf
 ```
 
 ### Financial Reports
 
-```python
+```text
 # Extract financial metrics
-"Xray 10-k.pdf for revenue, growth rates, and risk factors"
+Xray 10-k.pdf for revenue, growth rates, and risk factors
 
 # Get all tables
-"Extract all tables from earnings.pdf as JSON"
+Extract all tables from earnings.pdf as JSON
 ```
 
 ### Academic Papers
 
-```python
+```text
 # Map document structure
-"Map the structure of research-paper.pdf"
+Map the structure of research-paper.pdf
 
 # Extract methodology
-"Extract the methodology section from paper.pdf"
+Extract the methodology section from paper.pdf
 ```
 
 ### Invoice Processing
 
-```python
+```text
 # Extract key data
-"Xray invoice.pdf and extract vendor, amount, date, and line items"
+Xray invoice.pdf and extract vendor, amount, date, and line items
 
 # Get as structured data
-"Extract invoice.pdf as JSON with tables"
+Extract invoice.pdf as JSON with tables
 ```
 
 ## Working with Providers
@@ -121,15 +121,15 @@ Xray document.pdf with provider llama-parse and custom instructions:
 ### Auto-Selection (Default)
 Let Docsray choose the best provider:
 
-```python
-"Analyze document.pdf"  # Automatically selects provider
+```text
+Analyze document.pdf  # Automatically selects provider
 ```
 
 ### LlamaParse (Comprehensive)
 For deep analysis and AI-powered extraction:
 
-```python
-"Xray document.pdf with provider llama-parse"
+```text
+Xray document.pdf with provider llama-parse
 ```
 
 Features:
@@ -142,8 +142,8 @@ Features:
 ### PyMuPDF (Fast)
 For quick text extraction:
 
-```python
-"Extract document.pdf with provider pymupdf4llm"
+```text
+Extract document.pdf with provider pymupdf4llm
 ```
 
 Features:
@@ -156,68 +156,68 @@ Features:
 
 ### Navigate to Pages
 
-```python
-"Seek to page 10 in manual.pdf"
+```text
+Seek to page 10 in manual.pdf
 ```
 
 ### Find Sections
 
-```python
-"Seek to 'Introduction' section in thesis.pdf"
+```text
+Seek to 'Introduction' section in thesis.pdf
 ```
 
 ### Search Content
 
-```python
-"Search for 'payment terms' in contract.pdf"
+```text
+Search for 'payment terms' in contract.pdf
 ```
 
 ## Tips for Best Results
 
 ### 1. Start with Peek
 Always peek first to understand the document:
-```python
-"Peek at document.pdf"
+```text
+Peek at document.pdf
 ```
 
 ### 2. Use Specific Instructions
 Be specific about what you want:
-```python
-"Extract all email addresses and phone numbers from contact.pdf"
+```text
+Extract all email addresses and phone numbers from contact.pdf
 ```
 
 ### 3. Leverage Caching
 Results are cached - subsequent requests are instant:
-```python
-"Xray report.pdf"  # First time: 10 seconds
-"Xray report.pdf"  # Second time: instant
+```text
+Xray report.pdf  # First time: 10 seconds
+Xray report.pdf  # Second time: instant
 ```
 
 ### 4. Handle Large Documents
 Process specific pages for large documents:
-```python
-"Extract pages 1-10 from large-manual.pdf"
+```text
+Extract pages 1-10 from large-manual.pdf
 ```
 
 ## Interactive Example
 
-Try this complete workflow:
+Try this complete workflow in Claude:
 
-```python
+```text
 # 1. Check what's in the document
-"Peek at sample.pdf"
+Peek at sample.pdf
 
 # 2. Map the structure
-"Map the structure of sample.pdf"
+Map the structure of sample.pdf
 
 # 3. Extract everything with AI
-"Xray sample.pdf with provider llama-parse"
+Xray sample.pdf with provider llama-parse
 
 # 4. Get specific content
-"Extract tables from sample.pdf as JSON"
+Extract tables from sample.pdf as JSON
 
 # 5. Navigate to specific sections
-"Seek to page 5 in sample.pdf"
+Seek to page 5 in sample.pdf
 ```
 
 ## Next Steps
