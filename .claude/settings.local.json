@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(python -m pytest tests/unit/ -v)",
+      "Bash(pip install:*)",
+      "Bash(python -m pytest tests/integration/ -v)",
+      "Bash(python -m pytest -v)",
+      "Bash(docsray:*)",
+      "Bash(ruff check:*)",
+      "Bash(python -m pytest -v --tb=short)",
+      "Bash(python test:*)",
+      "Bash(rm:*)",
+      "Bash(python:*)",
+      "WebFetch(domain:docs.cloud.llamaindex.ai)",
+      "Bash(ls:*)",
+      "Bash(mv:*)",
+      "Bash(for file in /workspace/docsray-mcp/tests/manual/test_*.py)",
+      "Bash(do)",
+      "Bash(echo \"Updating $file\")",
+      "Bash(sed:*)",
+      "Bash(true)",
+      "Bash(done)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(timeout 30 python:*)",
+      "Bash(grep:*)",
+      "Bash(pytest:*)",
+      "Bash(cat:*)",
+      "Bash(source .env)",
+      "Bash(npm start)",
+      "Bash(npm run build:*)",
+      "Bash(touch:*)"
+    ],
+    "deny": []
+  }
+}

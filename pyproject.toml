@@ -6,7 +6,7 @@ authors = [
     {name = "Docsray Team", email = "team@docsray.dev"}
 ]
 readme = "README.md"
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
 requires-python = ">=3.9"
 keywords = ["mcp", "document", "pdf", "ai", "llm", "analysis", "extraction", "llamaparse", "mistral-ocr","ocrmypdf","tesseract"]
 classifiers = [
