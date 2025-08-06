@@ -47,17 +47,6 @@ const sidebars = {
     },
     {
       type: 'category',
-      label: 'Examples',
-      items: [
-        'examples/basic-extraction',
-        'examples/comprehensive-extraction',
-        'examples/entity-recognition',
-        'examples/table-extraction',
-        'examples/custom-instructions',
-      ],
-    },
-    {
-      type: 'category',
       label: 'Advanced',
       items: [
         'advanced/caching',
@@ -70,7 +59,6 @@ const sidebars = {
       label: 'API Reference',
       items: [
         'api/tools',
-        'api/providers',
         'api/configuration',
       ],
     },

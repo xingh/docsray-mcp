@@ -473,4 +473,4 @@ Switch to LlamaParse for:
 - Compare with [LlamaParse capabilities](./llamaparse)
 - See [Provider Comparison](./comparison) for detailed differences
 - Learn about [Performance Optimization](../advanced/performance)
-- Check [API Reference](../api/providers) for all options
+- Check [API Reference](../providers/overview) for all options

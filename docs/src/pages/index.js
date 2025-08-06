@@ -24,8 +24,8 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--secondary button--lg margin-left--md"
-            to="/docs/examples/comprehensive-extraction">
-            See Maximum Extraction Demo 🚀
+            to="/docs/tools/xray">
+            See AI Analysis Tool 🚀
           </Link>
         </div>
         <div className={styles.quickExample}>

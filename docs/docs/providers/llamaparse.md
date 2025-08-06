@@ -442,4 +442,4 @@ export DOCSRAY_CACHE_ENABLED=false
 - Learn about [PyMuPDF4LLM](./pymupdf) for fast processing
 - Compare [Provider Capabilities](./comparison)
 - See [Performance Optimization](../advanced/performance)
-- Check [API Reference](../api/providers) for all options
+- Check [API Reference](../providers/overview) for all options

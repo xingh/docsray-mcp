@@ -504,5 +504,4 @@ class DocumentProcessor:
 
 - Learn about [Extract Tool](./extract) for content extraction based on xray findings
 - See [Seek Tool](./seek) for navigation to specific entities or sections
-- Check [Entity Recognition Examples](../examples/entity-recognition) for detailed use cases
 - Review [API Reference](../api/tools) for complete parameter documentation

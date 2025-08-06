@@ -223,8 +223,6 @@ Try this complete workflow:
 ## Next Steps
 
 - Learn about [Providers](../providers/overview) in detail
-- Explore [Advanced Extraction](../examples/comprehensive-extraction)
 - See [API Reference](../api/tools) for all options
-- Check [Examples](../examples/basic-extraction) for more use cases
 
 Ready to extract everything from your documents? Start using Docsray with Claude now!

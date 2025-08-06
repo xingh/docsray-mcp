@@ -42,10 +42,7 @@ const config = {
           sidebarPath: './sidebars.js',
           editUrl: 'https://github.com/docsray/docsray-mcp/tree/main/docs/',
         },
-        blog: {
-          showReadingTime: true,
-          editUrl: 'https://github.com/docsray/docsray-mcp/tree/main/docs/',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -72,11 +69,6 @@ const config = {
             label: 'Documentation',
           },
           {
-            to: '/blog', 
-            label: 'Blog', 
-            position: 'left'
-          },
-          {
             href: 'https://github.com/docsray/docsray-mcp',
             label: 'GitHub',
             position: 'right',
@@ -95,11 +87,11 @@ const config = {
               },
               {
                 label: 'Providers',
-                to: '/docs/category/providers',
+                to: '/docs/providers/overview',
               },
               {
                 label: 'Tools Reference',
-                to: '/docs/category/tools',
+                to: '/docs/tools/peek',
               },
             ],
           },
@@ -123,10 +115,6 @@ const config = {
           {
             title: 'More',
             items: [
-              {
-                label: 'Blog',
-                to: '/blog',
-              },
               {
                 label: 'GitHub',
                 href: 'https://github.com/docsray/docsray-mcp',

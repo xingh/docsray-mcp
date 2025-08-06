@@ -23,7 +23,7 @@ Extract ALL data from documents with a single command:
 
 ### 🔄 **Multi-Provider Architecture**
 - **LlamaParse**: AI-powered deep analysis (5-30s)
-- **PyMuPDF**: Lightning-fast extraction (<1s)
+- **PyMuPDF**: Lightning-fast extraction (&lt;1s)
 - **Auto-selection**: Intelligent provider choice
 
 ### ⚡ **Intelligent Caching**

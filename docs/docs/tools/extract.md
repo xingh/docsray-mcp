@@ -534,6 +534,4 @@ def batch_extract_documents(input_dir, output_dir):
 ## Next Steps
 
 - Learn about [Seek Tool](./seek) for navigation to specific content
-- See [Basic Extraction Examples](../examples/basic-extraction) for detailed use cases
-- Check [Table Extraction Guide](../examples/table-extraction) for structured data
 - Review [API Reference](../api/tools) for complete parameter documentation

@@ -561,7 +561,6 @@ if __name__ == "__main__":
 
 ## Next Steps
 
-- Learn about [Basic Extraction Examples](../examples/basic-extraction) for content processing
 - See [Map Tool](./map) for understanding document structure before navigation
 - Check [Peek Tool](./peek) for quick document overview
 - Review [API Reference](../api/tools) for complete parameter documentation

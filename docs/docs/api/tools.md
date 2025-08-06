@@ -507,6 +507,6 @@ Cache keys are generated as: `{operation}_{doc_hash}_{params_hash}`
 
 ## Next Steps
 
-- See [Provider API Reference](./providers) for provider-specific details
+- See [Providers Overview](../providers/overview) for provider-specific details
 - Check [Configuration API](./configuration) for environment settings
 - Review [Tools Documentation](../tools/peek) for usage examples

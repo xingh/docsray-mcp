@@ -566,5 +566,5 @@ def sanitize_config_for_logging(config: DocsrayConfig) -> Dict[str, Any]:
 ## Next Steps
 
 - See [Tools API Reference](./tools) for operation parameters
-- Check [Providers API Reference](./providers) for provider-specific settings
+- Check [Providers Overview](../providers/overview) for provider-specific settings
 - Review [Configuration Guide](../getting-started/configuration) for setup examples

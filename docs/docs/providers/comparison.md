@@ -381,4 +381,4 @@ tables = result['analysis']['full_extraction']['tables']
 - Learn about [Tools Overview](../tools/peek) to understand which tools work best with each provider
 - See [Performance Optimization](../advanced/performance) for provider-specific tuning
 - Check [Caching Guide](../advanced/caching) to optimize LlamaParse costs
-- Review [API Reference](../api/providers) for all configuration options
+- Review [API Reference](../providers/overview) for all configuration options
