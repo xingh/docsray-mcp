@@ -19,16 +19,26 @@ This document outlines the comprehensive plan for registering and announcing the
 ```json
 {
   "name": "docsray",
-  "description": "Advanced document perception MCP server with multi-provider support",
+  "description": "Advanced document perception MCP server with comprehensive extraction and multi-provider support",
   "author": "Docsray Team",
   "repository": "https://github.com/docsray/docsray-mcp",
   "homepage": "https://docsray.io",
   "license": "Apache",
-  "categories": ["documents", "pdf", "ocr", "ai"],
+  "categories": ["documents", "pdf", "ocr", "ai", "analysis", "extraction", "tables", "images"],
   "capabilities": {
     "tools": ["seek", "peek", "map", "xray", "extract"],
     "resources": false,
-    "prompts": false
+    "prompts": false,
+    "features": [
+      "comprehensive-extraction",
+      "entity-recognition", 
+      "table-extraction",
+      "image-extraction",
+      "layout-preservation",
+      "custom-instructions",
+      "multi-provider",
+      "intelligent-caching"
+    ]
   }
 }
 ```
@@ -99,6 +109,8 @@ twine upload dist/*
    - "Building a Provider-Agnostic MCP Server"
    - "Comparing Document Processing Providers"
    - "OCR in the Age of LLMs"
+   - "Maximum Data Extraction: Getting Everything from PDFs with LlamaParse"
+   - "Comprehensive Document Analysis with AI-Powered Extraction"
 
 3. **Tutorials**
    - "Extract Data from PDFs with Claude and Docsray"
@@ -118,13 +130,14 @@ twine upload dist/*
 
 📄 Universal document processing for Claude
 🔍 5 powerful tools: seek, peek, map, xray, extract
-🎯 Multi-provider support (PyMuPDF, OCR, AI)
-⚡ Fast, cached, production-ready
+🎯 COMPREHENSIVE extraction with LlamaParse AI
+📊 Tables, images, entities, layouts - ALL data
+⚡ Multi-provider, cached, production-ready
 
 GitHub: [link]
 Docs: [link]
 
-#MCP #Claude #AI #DocumentProcessing
+#MCP #Claude #AI #DocumentProcessing #DataExtraction
 ```
 
 ### LinkedIn Post
@@ -186,6 +199,11 @@ Docs: [link]
 - "AI document extraction"
 - "Multi-provider OCR"
 - "Document understanding API"
+- "Comprehensive PDF extraction"
+- "LlamaParse MCP integration"
+- "Table extraction from PDF"
+- "Entity recognition in documents"
+- "Maximum data extraction"
 
 ### Content Strategy
 - Regular blog posts

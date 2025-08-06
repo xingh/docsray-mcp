@@ -75,7 +75,7 @@ class PyMuPDF4LLMProvider(DocumentProvider):
         return True
 
     async def peek(self, document: Document, options: Dict[str, Any]) -> PeekResult:
-        """Get document overview."""
+        """Get document overview with accurate metadata."""
         doc_path = await self._ensure_local_document(document)
         depth = options.get("depth", "structure")
 
@@ -85,36 +85,148 @@ class PyMuPDF4LLMProvider(DocumentProvider):
         preview = {}
 
         try:
-            # Get document info using pymupdf4llm
-            md_text = pymupdf4llm.to_markdown(
-                str(doc_path),
-                page_chunks=True,
-                write_images=False,
-                pages=[0]  # Just first page for preview
-            )
+            import fitz  # PyMuPDF
+            
+            # Open the document to get accurate metadata
+            pdf_doc = fitz.open(str(doc_path))
+            page_count = len(pdf_doc)
+            
+            # Get file size
+            file_size = doc_path.stat().st_size if doc_path.exists() else document.size
+            
+            # Dynamically discover what's actually available
+            available_formats = {}
+            available_features = []
+            
+            # Test what pymupdf4llm can actually do with this document
+            try:
+                # Test markdown extraction
+                test_md = pymupdf4llm.to_markdown(str(doc_path), pages=[0], page_chunks=False)
+                if test_md:
+                    available_formats["markdown"] = True
+                    available_features.append("markdown_extraction")
+            except:
+                available_formats["markdown"] = False
+            
+            # Test text extraction
+            try:
+                page_text = pdf_doc[0].get_text()
+                if page_text:
+                    available_formats["text"] = True
+                    available_features.append("text_extraction")
+            except:
+                available_formats["text"] = False
+            
+            # Check for images in document
+            has_any_images = False
+            for page_num in range(min(3, page_count)):  # Check first 3 pages
+                if pdf_doc[page_num].get_images():
+                    has_any_images = True
+                    break
+            available_formats["images"] = has_any_images
+            if has_any_images:
+                available_features.append("image_extraction")
+            
+            # Check for tables (basic detection)
+            has_any_tables = False
+            for page_num in range(min(3, page_count)):
+                page_text = pdf_doc[page_num].get_text()
+                # Look for table indicators
+                if any(indicator in page_text for indicator in ['|', '\t\t', '┃', '━', '─']):
+                    has_any_tables = True
+                    break
+            available_formats["tables"] = has_any_tables
+            if has_any_tables:
+                available_features.append("table_detection")
+            
+            # Check if we can extract to JSON (limited support)
+            available_formats["json"] = False  # PyMuPDF4LLM doesn't have native JSON export
+            available_formats["layout"] = False  # No advanced layout preservation
+            
+            # Add base features that are always available
+            available_features.extend([
+                "fast_processing",
+                "multi_page_support"
+            ])
+            
+            # Check for forms
+            has_forms = False
+            try:
+                for page_num in range(min(3, page_count)):
+                    page = pdf_doc[page_num]
+                    # PyMuPDF uses first_widget property for forms
+                    if hasattr(page, 'first_widget') and page.first_widget:
+                        has_forms = True
+                        available_features.append("form_detection")
+                        break
+            except:
+                pass  # Forms not supported in this version
+            
+            metadata = {
+                "pageCount": page_count,
+                "format": document.format or get_document_format(document.url) or "pdf",
+                "fileSize": file_size,
+                "availableFormats": available_formats,
+                "providerCapabilities": {
+                    "provider": "pymupdf4llm",
+                    "features": available_features,
+                    "status": "active",
+                    "limitations": [
+                        "No AI analysis",
+                        "Basic table detection only",
+                        "No OCR support"
+                    ]
+                }
+            }
 
-            # Parse metadata from first chunk
-            if md_text and isinstance(md_text, list) and len(md_text) > 0:
-                first_chunk = md_text[0]
-                metadata.update({
-                    "pageCount": first_chunk.get("metadata", {}).get("total_pages", 0),
-                    "format": document.format or "PDF",
-                    "fileSize": document.size,
-                })
+            if depth in ["structure", "preview"]:
+                # Get first page for analysis
+                first_page_chunks = pymupdf4llm.to_markdown(
+                    str(doc_path),
+                    page_chunks=True,
+                    write_images=False,
+                    pages=[0]  # Just first page
+                )
+                
+                has_images = False
+                has_tables = False
+                
+                # Check all pages for images and tables
+                for page_num in range(min(5, page_count)):  # Check first 5 pages for structure
+                    page = pdf_doc[page_num]
+                    if page.get_images():
+                        has_images = True
+                    # Simple table detection - look for table indicators in text
+                    page_text = page.get_text()
+                    if '|' in page_text or '\t' in page_text:
+                        has_tables = True
+                
+                structure = {
+                    "hasImages": has_images,
+                    "hasTables": has_tables,
+                    "sections": [],  # Would need more processing
+                    "totalPages": page_count,
+                    "extractionTypes": ["markdown", "text", "images"]
+                }
 
-                if depth in ["structure", "preview"]:
-                    # Extract structure info
-                    structure = {
-                        "hasImages": first_chunk.get("metadata", {}).get("has_images", False),
-                        "hasTables": first_chunk.get("metadata", {}).get("has_tables", False),
-                        "sections": [],  # Would need more processing
+            if depth == "preview":
+                # Get actual first page text
+                first_page_text = ""
+                if first_page_chunks and isinstance(first_page_chunks, list) and len(first_page_chunks) > 0:
+                    first_chunk = first_page_chunks[0]
+                    first_page_text = first_chunk.get("text", "") if isinstance(first_chunk, dict) else str(first_chunk)
+                
+                preview = {
+                    "firstPageText": first_page_text[:500],
+                    "firstPageMarkdown": first_page_text[:500],  # Already in markdown format
+                    "tableOfContents": [],  # Would need TOC extraction
+                    "availableData": {
+                        "pages": page_count,
+                        "extractable": True
                     }
-
-                if depth == "preview":
-                    preview = {
-                        "firstPageText": first_chunk.get("text", "")[:500],
-                        "tableOfContents": []  # Would need TOC extraction
-                    }
+                }
+            
+            pdf_doc.close()
 
         except Exception as e:
             logger.error(f"Error peeking document: {e}")

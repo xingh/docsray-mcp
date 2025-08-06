@@ -219,6 +219,10 @@ class LlamaParseCache:
         
         return extraction_result
     
+    async def get_cached_extraction(self, document_path: Path, parsing_instruction: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """Async wrapper for retrieve_extraction for compatibility."""
+        return await self.retrieve_extraction(document_path, parsing_instruction)
+    
     def clear_cache(self, document_path: Optional[Path] = None) -> int:
         """Clear cache for a specific document or all cached data.
         

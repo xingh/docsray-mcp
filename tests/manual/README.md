@@ -1,37 +1,20 @@
 # Manual Test Scripts
 
-This directory contains manual test scripts for testing various Docsray MCP features.
+This directory contains manual test scripts for debugging and development purposes. These tests are NOT run automatically in CI.
 
-## Test Scripts
+## Available Tests
 
-### test_providers.py
-Tests basic provider functionality (PyMuPDF4LLM).
+### test_cache_system.py
+Tests the LlamaParse caching system with real API calls.
 ```bash
-python tests/manual/test_providers.py
-```
-
-### test_xray.py
-Tests the xray functionality with LlamaParse provider.
-```bash
-python tests/manual/test_xray.py
+python tests/manual/test_cache_system.py
 ```
 
 ### test_with_env.py
-Tests LlamaParse functionality using .env file configuration.
+Tests LlamaParse functionality with environment variables.
 ```bash
+export LLAMAPARSE_API_KEY="your-key"
 python tests/manual/test_with_env.py
-```
-
-### test_enhanced_llamaparse.py
-Tests enhanced LlamaParse features including image extraction, tables, and layout.
-```bash
-python tests/manual/test_enhanced_llamaparse.py
-```
-
-### test_cache_system.py
-Tests the LlamaParse caching system.
-```bash
-python tests/manual/test_cache_system.py
 ```
 
 ## Prerequisites
@@ -64,6 +47,36 @@ python src/docsray/cli/cache_manager.py clear /path/to/document.pdf
 # Clear all cache
 python src/docsray/cli/cache_manager.py clear -f
 ```
+
+## Running the Full Test Suite
+
+To run the complete automated test suite:
+
+```bash
+# Run all tests (unit + integration)
+pytest tests/
+
+# Run only unit tests (fast, no API calls)
+pytest tests/unit/
+
+# Run only integration tests
+pytest tests/integration/
+
+# Run with coverage report
+pytest tests/ --cov=src/docsray --cov-report=html
+
+# Run specific test file
+pytest tests/integration/test_tools.py
+
+# Run with verbose output
+pytest tests/ -v
+```
+
+## Test Organization
+
+- **Unit Tests** (`tests/unit/`): Fast, isolated tests for individual components
+- **Integration Tests** (`tests/integration/`): Tests that verify component interactions
+- **Manual Tests** (`tests/manual/`): Scripts for debugging with real API calls
 
 ## Sample Documents
 

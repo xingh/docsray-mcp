@@ -8,34 +8,43 @@
 
 **Docsray** is a powerful Model Context Protocol (MCP) server that gives AI assistants like Claude advanced document perception capabilities. Extract text, navigate pages, analyze structure, and understand any document with ease.
 
-**✅ Status: Phase 1 Complete - Working in Cursor and other MCP clients**
+**✅ Status: Phase 1 Complete with LlamaParse Integration - Working in Cursor and other MCP clients**
 
 ## ✨ Features
 
 ### 🎯 Five Powerful Tools
 
-1. **`docsray_extract`** - Extract content in multiple formats (text, tables, images)
-2. **`docsray_seek`** - Navigate to specific pages or sections
-3. **`docsray_peek`** - Get document overview and metadata without full extraction
-4. **`docsray_map`** - Generate comprehensive document structure maps
-5. **`docsray_xray`** - AI-powered deep document analysis (with compatible providers)
+1. **`docsray_peek`** - Quick document overview with format detection and provider capabilities
+2. **`docsray_map`** - Generate comprehensive document structure maps with caching
+3. **`docsray_xray`** - AI-powered deep analysis extracting entities, relationships, and insights
+4. **`docsray_extract`** - Extract content in multiple formats (markdown, text, JSON, tables)
+5. **`docsray_seek`** - Navigate to specific pages, sections, or search for content
 
 ### 🔌 Multi-Provider Architecture
 
 - **PyMuPDF4LLM** - Lightning-fast PDF processing (✅ Implemented)
+  - Fast markdown extraction
+  - Basic table detection
+  - Multi-page support
+  - Always enabled as fallback
+
+- **LlamaParse** - Deep document understanding with LLMs (✅ Implemented)
+  - AI-powered entity extraction
+  - Custom analysis instructions
+  - Comprehensive caching in .docsray directories
+  - Rich format preservation (markdown, images, tables)
+
 - **PyTesseract** - OCR for scanned documents (🔄 Planned)
-- **OCRmyPDF** - Advanced OCR with PDF optimization (🔄 Planned)
 - **Mistral OCR** - AI-powered OCR and analysis (🔄 Planned)
-- **LlamaParse** - Deep document understanding with LLMs (🔄 Planned)
 
 ### 🚀 Key Benefits
 
-- **Universal Format Support** - PDFs, XPS, EPUB, CBZ, SVG (more formats coming)
-- **Local & Remote Files** - Support for URLs, absolute paths, relative paths, and ~ paths
-- **Intelligent Provider Selection** - Automatically chooses the best tool for each document
-- **High Performance** - Built-in caching with TTL support
-- **Production Ready** - Comprehensive error handling and logging
-- **Easy Integration** - Works seamlessly with Cursor, Claude Desktop and other MCP clients
+- **Universal Input Support** - Local files (./path, ../path, /absolute) and URLs (https://)
+- **Intelligent Provider Selection** - Automatically chooses the best tool for each task
+- **Smart Caching** - LlamaParse results cached in .docsray directories for instant access
+- **Dynamic Discovery** - Tools report actual capabilities based on what's enabled
+- **Production Ready** - Comprehensive error handling, logging, and 56 tests
+- **Self-Documenting** - Built-in resources for discovery by MCP clients
 
 ## 📦 Installation
 
@@ -49,305 +58,301 @@ uvx docsray-mcp
 uv tool install docsray-mcp
 ```
 
-### Using pip
+### Alternative: Install with pip
 
 ```bash
+# Basic installation (PyMuPDF4LLM only)
 pip install docsray-mcp
 
-# With OCR support
-pip install "docsray-mcp[ocr]"
-
-# With AI providers
+# With LlamaParse for AI analysis
 pip install "docsray-mcp[ai]"
 
-# Everything
-pip install "docsray-mcp[all]"
+# Development installation
+pip install -e ".[dev]"
 ```
 
-## 🚀 Integration
+## 🚀 Quick Start
 
-### Cursor Integration (Confirmed Working ✅)
+### 1. Set up API Keys (Optional but Recommended)
 
-Add to your Cursor MCP settings:
+Create a `.env` file in your project:
+
+```bash
+# For AI-powered analysis with LlamaParse
+LLAMAPARSE_API_KEY=llx-your-key-here
+
+# Or use environment variables
+export LLAMAPARSE_API_KEY=llx-your-key-here
+```
+
+Get your free LlamaParse API key at [cloud.llamaindex.ai](https://cloud.llamaindex.ai)
+
+### 2. Configure with Your MCP Client
+
+#### For Cursor
+
+Add to your Cursor settings:
 
 ```json
 {
   "mcpServers": {
     "docsray": {
-      "command": "python",
-      "args": ["-m", "docsray.cli", "start"],
+      "command": "uvx",
+      "args": ["docsray-mcp"],
       "env": {
-        "DOCSRAY_PYMUPDF_ENABLED": "true"
+        "LLAMAPARSE_API_KEY": "llx-your-key-here"
       }
     }
   }
 }
 ```
 
-### Claude Desktop Integration
+#### For Claude Desktop
 
-Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "docsray": {
-      "command": "docsray",
-      "args": ["start"],
+      "command": "uvx",
+      "args": ["docsray-mcp"],
       "env": {
-        "DOCSRAY_PYMUPDF_ENABLED": "true"
+        "LLAMAPARSE_API_KEY": "llx-your-key-here"
       }
     }
   }
 }
 ```
 
-### With API Keys (for future AI providers)
+## 📚 Usage Examples
 
-```json
-{
-  "mcpServers": {
-    "docsray": {
-      "command": "docsray",
-      "args": ["start"],
-      "env": {
-        "DOCSRAY_PYMUPDF_ENABLED": "true",
-        "DOCSRAY_MISTRAL_ENABLED": "false",
-        "DOCSRAY_MISTRAL_API_KEY": "your-mistral-api-key",
-        "DOCSRAY_LLAMAPARSE_ENABLED": "false",
-        "DOCSRAY_LLAMAPARSE_API_KEY": "your-llamaparse-api-key"
-      }
-    }
-  }
-}
+### Basic Document Overview
+
+```
+Peek at ./document.pdf to see its structure and available formats
 ```
 
-## 💡 Usage Examples
+### Extract Entities from Contracts
 
-### Supported Input Formats
-
-Docsray supports multiple ways to reference documents:
-
-- **URLs**: `https://example.com/document.pdf`
-- **Absolute paths**: `/home/user/documents/report.pdf`
-- **Relative paths**: `./documents/report.pdf` or `../shared/report.pdf`
-- **Home directory paths**: `~/Documents/report.pdf`
-
-### Extract Text from a PDF
-
-```python
-# In Claude - using local file
-result = await use_mcp_tool("docsray", "docsray_extract", {
-  "document_url": "./documents/report.pdf",
-  "extraction_targets": ["text", "tables"],
-  "output_format": "markdown"
-})
-
-# Or using a URL
-result = await use_mcp_tool("docsray", "docsray_extract", {
-  "document_url": "https://example.com/document.pdf",
-  "extraction_targets": ["text", "tables"],
-  "output_format": "markdown"
-})
+```
+Xray ./contract.pdf and extract all parties, dates, payment terms, and obligations
 ```
 
-### Navigate to a Specific Page
+### Navigate Documents
 
-```python
-result = await use_mcp_tool("docsray", "docsray_seek", {
-  "document_url": "~/Documents/manual.pdf",
-  "target": {"page": 5},
-  "extract_content": true
-})
+```
+Map the complete structure of ./manual.pdf including all sections and subsections
 ```
 
-### Get Document Overview
+### Extract Specific Content
 
-```python
-result = await use_mcp_tool("docsray", "docsray_peek", {
-  "document_url": "../shared/contract.pdf",
-  "depth": "structure"
-})
+```
+Extract pages 10-20 from ./report.pdf as markdown
 ```
 
-### Generate Document Map
+### Analyze Web Documents
 
-```python
-result = await use_mcp_tool("docsray", "docsray_map", {
-  "document_url": "/path/to/document.pdf",
-  "include_content": false,
-  "analysis_depth": "deep"
-})
+```
+Analyze https://arxiv.org/pdf/2301.00234.pdf for methodology and key findings
 ```
 
-### AI-Powered Analysis (Coming Soon)
+### Compare Providers
 
-```python
-# Note: xray endpoint currently returns a placeholder
-# Full AI analysis will be available when AI providers are implemented
-result = await use_mcp_tool("docsray", "docsray_xray", {
-  "document_url": "https://example.com/research-paper.pdf",
-  "analysis_type": ["entities", "key-points", "sentiment"],
-  "provider": "mistral-ocr"  # Future provider
-})
+```
+Extract text from document.pdf with provider pymupdf4llm (fast)
+Xray document.pdf with provider llama-parse (AI analysis)
 ```
 
-## 🎯 Real-World Use Cases
-
-### 📊 Financial Analysis
-Extract tables from financial reports, analyze trends, and identify key metrics across multiple documents.
-
-### 📚 Research Assistant
-Navigate academic papers, extract citations, and summarize findings from large document collections.
-
-### 📋 Contract Review
-Analyze legal documents, extract key terms, and identify important clauses with AI assistance.
-
-### 🏢 Invoice Processing
-Extract data from invoices and receipts, with OCR support for scanned documents.
-
-### 📖 Content Migration
-Convert legacy documents to modern formats while preserving structure and formatting.
-
-## ⚙️ Configuration
+## 🛠️ Advanced Configuration
 
 ### Environment Variables
 
-Create a `.env` file or set environment variables:
-
 ```bash
-# Provider Selection
-DOCSRAY_DEFAULT_PROVIDER=auto  # auto, pymupdf4llm, mistral-ocr, etc.
-
-# PyMuPDF4LLM (enabled by default)
-DOCSRAY_PYMUPDF_ENABLED=true
-
-# OCR Providers
-DOCSRAY_PYTESSERACT_ENABLED=true
-DOCSRAY_TESSERACT_LANGUAGES=eng,fra,deu
-DOCSRAY_OCRMYPDF_ENABLED=true
-
-# AI Providers
-DOCSRAY_MISTRAL_ENABLED=true
-DOCSRAY_MISTRAL_API_KEY=your-api-key
+# Provider Configuration
+DOCSRAY_PYMUPDF4LLM_ENABLED=true  # Always true by default
 DOCSRAY_LLAMAPARSE_ENABLED=true
-DOCSRAY_LLAMAPARSE_API_KEY=your-api-key
+LLAMAPARSE_API_KEY=llx-your-key
 
-# Performance
+# Performance Tuning
 DOCSRAY_CACHE_ENABLED=true
 DOCSRAY_CACHE_TTL=3600
-DOCSRAY_MAX_CONCURRENT_REQUESTS=10
+DOCSRAY_MAX_CONCURRENT_REQUESTS=5
+DOCSRAY_TIMEOUT_SECONDS=30
+
+# Logging
+DOCSRAY_LOG_LEVEL=INFO
 ```
 
-## 🛠️ CLI Commands
+### Provider Capabilities
+
+#### PyMuPDF4LLM (Always Available)
+- ✅ Fast text extraction
+- ✅ Markdown formatting
+- ✅ Basic table detection
+- ✅ Multi-page support
+- ❌ No AI analysis
+- ❌ No OCR
+
+#### LlamaParse (When API Key Configured)
+- ✅ AI-powered analysis
+- ✅ Entity extraction
+- ✅ Custom instructions
+- ✅ Table extraction
+- ✅ Image extraction
+- ✅ Layout preservation
+- ✅ Relationship mapping
+- ✅ Result caching
+
+## 🧪 Testing
 
 ```bash
-# Start the server
-docsray start
+# Run all tests
+pytest tests/
 
-# List available providers
-docsray list-providers
+# Run only unit tests (no API calls)
+pytest tests/unit/
 
-# Test a provider
-docsray test --provider pymupdf4llm --document sample.pdf
+# Run integration tests
+pytest tests/integration/
 
-# Start with specific transport
-docsray start --transport http --port 8080
+# Run with coverage
+pytest tests/ --cov=src/docsray --cov-report=html
 ```
 
-## 📊 Provider Comparison
+Current test coverage: **52 tests passing** with comprehensive coverage across all components
 
-| Provider | Formats | OCR | AI Analysis | Speed | Status | Best For |
-|----------|---------|-----|-------------|-------|--------|----------|
-| PyMuPDF4LLM | PDF, XPS, EPUB, CBZ, SVG | ❌ | ❌ | ⚡⚡⚡ | ✅ Implemented | Fast text extraction |
-| PyTesseract | Images, PDF | ✅ | ❌ | ⚡ | 🔄 Planned | Scanned documents |
-| OCRmyPDF | PDF | ✅ | ❌ | ⚡⚡ | 🔄 Planned | PDF optimization |
-| Mistral OCR | PDF, Images, DOCX | ✅ | ✅ | ⚡⚡ | 🔄 Planned | Complex layouts |
-| LlamaParse | PDF, DOCX, PPTX | ✅ | ✅ | ⚡ | 🔄 Planned | Deep understanding |
+## 📖 API Reference
 
-## 🔧 Advanced Features
+### Tool: docsray_peek
 
-### Caching
-Documents are automatically cached to improve performance for repeated operations.
-
-### Provider Fallback
-If one provider fails, Docsray automatically tries alternative providers.
-
-### Parallel Processing
-Multiple documents can be processed concurrently for better throughput.
-
-### Custom Provider Selection
-Force specific providers for specialized tasks:
+Get quick document overview and metadata.
 
 ```python
-result = await use_mcp_tool("docsray", "docsray_extract", {
-  "document_url": "scanned.pdf",
-  "provider": "ocrmypdf"  # Force OCR provider
-})
+{
+  "document_url": "path/to/document.pdf",
+  "depth": "structure",  # metadata | structure | preview
+  "provider": "auto"     # auto | pymupdf4llm | llama-parse
+}
+```
+
+### Tool: docsray_map
+
+Generate comprehensive document structure map.
+
+```python
+{
+  "document_url": "path/to/document.pdf",
+  "include_content": false,
+  "analysis_depth": "deep",  # basic | deep | comprehensive
+  "provider": "auto"
+}
+```
+
+### Tool: docsray_xray
+
+Deep AI-powered document analysis.
+
+```python
+{
+  "document_url": "path/to/document.pdf",
+  "analysis_type": ["entities", "key-points"],
+  "custom_instructions": "Extract all dates and amounts",
+  "provider": "llama-parse"
+}
+```
+
+### Tool: docsray_extract
+
+Extract content in various formats.
+
+```python
+{
+  "document_url": "path/to/document.pdf",
+  "extraction_targets": ["text", "tables"],
+  "output_format": "markdown",  # markdown | text | json
+  "pages": [1, 2, 3],  # Optional: specific pages
+  "provider": "auto"
+}
+```
+
+### Tool: docsray_seek
+
+Navigate to specific document locations.
+
+```python
+{
+  "document_url": "path/to/document.pdf",
+  "target": {"page": 5},  # or {"section": "Introduction"} or {"query": "search text"}
+  "extract_content": true,
+  "provider": "auto"
+}
+```
+
+## 🏗️ Architecture
+
+```
+docsray-mcp/
+├── src/docsray/
+│   ├── server.py           # FastMCP server with discovery resources
+│   ├── providers/          # Provider implementations
+│   │   ├── base.py        # Provider interface
+│   │   ├── pymupdf4llm.py # Fast PDF extraction
+│   │   └── llamaparse.py  # AI-powered analysis
+│   ├── tools/             # MCP tool implementations
+│   │   ├── peek.py        # Document overview
+│   │   ├── map.py         # Structure mapping
+│   │   ├── xray.py        # Deep analysis
+│   │   ├── extract.py     # Content extraction
+│   │   └── seek.py        # Navigation
+│   └── utils/             # Utilities
+│       ├── cache.py       # Document caching
+│       └── llamaparse_cache.py  # LlamaParse .docsray cache
+├── tests/
+│   ├── unit/              # Fast isolated tests
+│   ├── integration/       # Component interaction tests
+│   └── manual/            # Debugging scripts
+└── PROMPTS.md            # Example prompts for all use cases
 ```
 
 ## 🤝 Contributing
 
-We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+### Development Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/docsray/docsray-mcp
+git clone https://github.com/docsray/docsray-mcp.git
 cd docsray-mcp
 
-# Install development dependencies
+# Install in development mode
 pip install -e ".[dev]"
 
 # Run tests
-pytest
+pytest tests/
 
-# Run linter
+# Run linting
 ruff check src/
 ```
 
-## 📚 Documentation
-
-- [Quick Start Guide](docs/quickstart.md)
-- [API Reference](docs/api-reference.md)
-- [Provider Documentation](docs/providers.md)
-- [Examples](examples/)
-
-## 🛣️ Roadmap
-
-- [x] Phase 1: Core MCP server with PyMuPDF4LLM ✅ Complete
-  - [x] All 5 tool endpoints (seek, peek, map, xray, extract)
-  - [x] Local and remote file support
-  - [x] Caching system
-  - [x] Provider registry
-- [ ] Phase 2: OCR providers (PyTesseract, OCRmyPDF)
-- [ ] Phase 3: AI providers (Mistral, LlamaParse)
-- [ ] Phase 4: Advanced features (streaming, batch processing)
-- [ ] Phase 5: Plugin SDK for custom providers
-
 ## 📄 License
 
-Apache License 2.0 - see [LICENSE](LICENSE) for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-Built with:
-- [FastMCP](https://github.com/anthropics/fastmcp) v2.11.1 - Rapid MCP server development
-- [PyMuPDF4LLM](https://github.com/pymupdf/pymupdf4llm) v0.0.17+ - PDF processing
-- [Model Context Protocol](https://github.com/anthropics/mcp) - AI integration standard
+- Built on [FastMCP](https://github.com/jlowin/fastmcp) framework
+- Document processing powered by [PyMuPDF4LLM](https://github.com/pymupdf/PyMuPDF4LLM)
+- AI analysis powered by [LlamaParse](https://github.com/run-llama/llama_parse)
+- Inspired by the [Model Context Protocol](https://github.com/anthropics/mcp) specification
 
-## 📞 Support
+## 📬 Support
 
-- 📧 Email: support@docsray.dev
-- 💬 Discord: [Join our community](https://discord.gg/docsray)
-- 🐛 Issues: [GitHub Issues](https://github.com/docsray/docsray-mcp/issues)
-- 📖 Docs: [docs.docsray.dev](https://docs.docsray.dev)
+- 📖 [Documentation](https://docs.docsray.dev)
+- 🐛 [Issue Tracker](https://github.com/docsray/docsray-mcp/issues)
+- 💬 [Discussions](https://github.com/docsray/docsray-mcp/discussions)
 
 ---
 
-<p align="center">
-  Made with ❤️ by the Docsray Team
-</p>
-
-<p align="center">
-  <a href="https://github.com/docsray/docsray-mcp/stargazers">⭐ Star us on GitHub!</a>
-</p>
+**Made with ❤️ for the MCP ecosystem**

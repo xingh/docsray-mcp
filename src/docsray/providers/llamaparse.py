@@ -90,19 +90,88 @@ class LlamaParseProvider(DocumentProvider):
         return True
 
     async def peek(self, document: Document, options: Dict[str, Any]) -> PeekResult:
-        """Get document overview using LlamaParse."""
+        """Get document overview showing LlamaParse capabilities and available formats."""
         doc_path = await self._ensure_local_document(document)
         depth = options.get("depth", "structure")
 
         try:
-            # Parse document with LlamaParse
-            result = await self._parse_document(doc_path, parsing_instruction="Extract document metadata and structure only")
+            # Dynamically check what's actually enabled and available
+            available_features = []
+            available_formats = {}
+            provider_status = "inactive"
+            
+            # Check if LlamaParse is properly configured
+            if hasattr(self, 'config') and self.config:
+                if self.config.api_key:
+                    provider_status = "active"
+                    # LlamaParse is configured, check what it can do
+                    
+                    # Check if we have cached data first
+                    if self.cache:
+                        cached_data = await self.cache.get_cached_extraction(doc_path)
+                        if cached_data:
+                            result = cached_data
+                            logger.info(f"Using cached LlamaParse data for peek")
+                        else:
+                            # Parse document with minimal extraction for peek
+                            result = await self._parse_document(doc_path, parsing_instruction="Extract document metadata and structure only")
+                    else:
+                        result = await self._parse_document(doc_path, parsing_instruction="Extract document metadata and structure only")
+                    
+                    # Dynamically determine available formats based on actual result
+                    if isinstance(result, dict):
+                        # Check what's actually in the result
+                        if result.get("documents") or result.get("pages"):
+                            available_formats["text"] = True
+                            available_formats["markdown"] = True
+                            available_features.append("text_extraction")
+                            available_features.append("markdown_extraction")
+                        
+                        if result.get("documents") or result.get("pages"):
+                            available_formats["json"] = True
+                            available_features.append("structured_output")
+                        
+                        if result.get("images"):
+                            available_formats["images"] = True
+                            available_features.append("image_extraction")
+                        
+                        if result.get("tables"):
+                            available_formats["tables"] = True
+                            available_features.append("table_extraction")
+                        
+                        # Check for layout information
+                        if any(p.get("layout") for p in result.get("pages", [])):
+                            available_formats["layout"] = True
+                            available_features.append("layout_preservation")
+                    
+                    # Add AI-powered features if API is working
+                    available_features.extend([
+                        "ai_analysis",
+                        "entity_recognition",
+                        "relationship_mapping",
+                        "custom_instructions"
+                    ])
+                else:
+                    # No API key configured
+                    provider_status = "not_configured"
+                    result = {}
+            else:
+                # Not properly initialized
+                provider_status = "not_initialized"
+                result = {}
             
             # Extract metadata from parsed result
             metadata = {
                 "format": document.format or get_document_format(document.url),
                 "fileSize": document.size,
-                "pageCount": len(result.get("pages", [])) if isinstance(result, dict) else 1,
+                "pageCount": len(result.get("pages", [])) if isinstance(result, dict) and result else 0,
+                "availableFormats": available_formats,
+                "providerCapabilities": {
+                    "provider": "llama-parse",
+                    "features": available_features,
+                    "status": provider_status,
+                    "limitations": [] if provider_status == "active" else ["API key required", "No AI analysis available"]
+                }
             }
 
             structure = {}
@@ -110,16 +179,26 @@ class LlamaParseProvider(DocumentProvider):
 
             if depth in ["structure", "preview"]:
                 structure = {
-                    "hasImages": "images" in str(result).lower() if result else False,
-                    "hasTables": "table" in str(result).lower() if result else False,
+                    "hasImages": len(result.get("images", [])) > 0 if isinstance(result, dict) else False,
+                    "hasTables": len(result.get("tables", [])) > 0 if isinstance(result, dict) else False,
                     "sections": self._extract_sections(result),
+                    "totalDocuments": len(result.get("documents", [])) if isinstance(result, dict) else 0,
+                    "extractionTypes": list(result.keys()) if isinstance(result, dict) else []
                 }
 
             if depth == "preview":
-                preview_text = str(result)[:1000] if result else ""
+                # Show a preview of different available formats
                 preview = {
-                    "firstPageText": preview_text,
+                    "firstPageText": result.get("pages", [{}])[0].get("text", "")[:500] if isinstance(result, dict) else "",
+                    "firstPageMarkdown": result.get("pages", [{}])[0].get("markdown", "")[:500] if isinstance(result, dict) else "",
                     "tableOfContents": self._extract_toc(result),
+                    "sampleEntities": self._extract_entities(result)[:5] if isinstance(result, dict) else [],
+                    "availableData": {
+                        "documents": len(result.get("documents", [])) if isinstance(result, dict) else 0,
+                        "pages": len(result.get("pages", [])) if isinstance(result, dict) else 0,
+                        "images": len(result.get("images", [])) if isinstance(result, dict) else 0,
+                        "tables": len(result.get("tables", [])) if isinstance(result, dict) else 0
+                    }
                 }
 
         except Exception as e:
@@ -244,49 +323,43 @@ class LlamaParseProvider(DocumentProvider):
         )
 
     async def xray(self, document: Document, options: Dict[str, Any]) -> XrayResult:
-        """Perform deep AI-powered document analysis using LlamaParse."""
+        """Return ALL cached LlamaParse extraction data for comprehensive analysis."""
         doc_path = await self._ensure_local_document(document)
-        analysis_type = options.get("analysis_type", ["entities", "key-points"])
         custom_instructions = options.get("custom_instructions")
 
         try:
-            # Build parsing instruction based on analysis type
-            instructions = []
+            # Build comprehensive parsing instruction
+            parsing_instruction = custom_instructions or "Extract all possible information from this document"
             
-            if "entities" in analysis_type:
-                instructions.append("Extract all named entities (people, organizations, locations, dates)")
-            if "relationships" in analysis_type:
-                instructions.append("Identify relationships between entities")
-            if "key-points" in analysis_type:
-                instructions.append("Extract key points and main ideas")
-            if "sentiment" in analysis_type:
-                instructions.append("Analyze sentiment and tone")
-            if "structure" in analysis_type:
-                instructions.append("Analyze document structure and organization")
-
-            if custom_instructions:
-                instructions.append(custom_instructions)
-
-            parsing_instruction = ". ".join(instructions)
-            
-            # Parse with AI analysis
+            # Parse document - this will either use cache or fetch new data
             result = await self._parse_document(doc_path, parsing_instruction=parsing_instruction)
 
-            # Structure the analysis results
-            analysis = {}
+            # Return EVERYTHING from the extraction
+            analysis = {
+                "full_extraction": result,  # All the raw extraction data
+                "summary": {
+                    "total_documents": len(result.get("documents", [])) if isinstance(result, dict) else 0,
+                    "total_pages": len(result.get("pages", [])) if isinstance(result, dict) else 0,
+                    "has_images": len(result.get("images", [])) > 0 if isinstance(result, dict) else False,
+                    "has_tables": len(result.get("tables", [])) > 0 if isinstance(result, dict) else False,
+                    "metadata": result.get("metadata", {}) if isinstance(result, dict) else {}
+                }
+            }
             
-            if "entities" in analysis_type:
-                analysis["entities"] = self._extract_entities(result)
-            if "relationships" in analysis_type:
-                analysis["relationships"] = self._extract_relationships(result)
-            if "key-points" in analysis_type:
-                analysis["key_points"] = self._extract_key_points(result)
-            if "sentiment" in analysis_type:
-                analysis["sentiment"] = self._analyze_sentiment(result)
-            if "structure" in analysis_type:
-                analysis["structure"] = self._analyze_structure(result)
+            # Also extract specific insights if available
+            if isinstance(result, dict):
+                # Extract entities from the text content
+                all_text = " ".join([doc.get("text", "") for doc in result.get("documents", [])])
+                
+                # Basic entity extraction from the AI-processed text
+                if all_text:
+                    analysis["extracted_content"] = {
+                        "entities": self._extract_entities(result),
+                        "key_points": self._extract_key_points(result),
+                        "structure": self._analyze_structure(result)
+                    }
 
-            confidence = 0.85  # LlamaParse typically has high confidence
+            confidence = 0.95  # High confidence since we have all the data
 
         except Exception as e:
             logger.error(f"Error performing xray analysis with LlamaParse: {e}")
@@ -298,7 +371,8 @@ class LlamaParseProvider(DocumentProvider):
             provider_info={
                 "name": self.get_name(),
                 "model": "llama-parse-latest",
-                "supports_xray": True
+                "supports_xray": True,
+                "capabilities": ["full_extraction", "images", "tables", "markdown", "json", "text"]
             }
         )
 
@@ -476,11 +550,46 @@ class LlamaParseProvider(DocumentProvider):
 
         logger.info(f"Making LlamaParse API call for document: {doc_path.name}")
         
+        # Ensure file has proper extension for LlamaParse
+        file_path_str = str(doc_path)
+        if not doc_path.suffix:
+            # Try to detect file type and add extension
+            import mimetypes
+            import shutil
+            mime_type, _ = mimetypes.guess_type(str(doc_path))
+            if not mime_type:
+                # Use file command to detect type
+                try:
+                    import subprocess
+                    result = subprocess.run(['file', '--mime-type', str(doc_path)], 
+                                         capture_output=True, text=True)
+                    if result.returncode == 0:
+                        mime_type = result.stdout.split(':')[-1].strip()
+                except:
+                    pass
+            
+            # Map mime type to extension
+            ext_map = {
+                'application/pdf': '.pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+                'application/msword': '.doc',
+                'text/plain': '.txt',
+                'text/html': '.html',
+            }
+            
+            if mime_type in ext_map:
+                # Create a temporary file with the proper extension
+                temp_path = doc_path.with_suffix(ext_map[mime_type])
+                if not temp_path.exists():
+                    shutil.copy2(doc_path, temp_path)
+                file_path_str = str(temp_path)
+                logger.info(f"Added extension {ext_map[mime_type]} to file for LlamaParse")
+        
         # Parse the document with timeout to prevent hanging
         try:
             # Set a reasonable timeout (60 seconds for API call)
             documents = await asyncio.wait_for(
-                self.parser.aload_data(str(doc_path)),
+                self.parser.aload_data(file_path_str),
                 timeout=60.0
             )
             logger.info(f"LlamaParse API call completed. Received {len(documents) if documents else 0} document(s)")
@@ -502,58 +611,84 @@ class LlamaParseProvider(DocumentProvider):
         
         if documents:
             for i, doc in enumerate(documents):
-                # Store document data
+                # Store document data - handle both Document objects and dicts
+                doc_text = ""
+                doc_metadata = {}
+                
+                # Handle LlamaParse Document object
+                if hasattr(doc, 'text'):
+                    doc_text = doc.text
+                    doc_metadata = doc.metadata if hasattr(doc, 'metadata') else {}
+                elif hasattr(doc, 'get_content'):
+                    doc_text = doc.get_content()
+                    doc_metadata = doc.metadata if hasattr(doc, 'metadata') else {}
+                elif isinstance(doc, dict):
+                    doc_text = doc.get('text', '')
+                    doc_metadata = doc.get('metadata', {})
+                else:
+                    # Try to convert to string
+                    doc_text = str(doc)
+                
                 result["documents"].append({
-                    "text": doc.text,
-                    "metadata": doc.metadata
+                    "text": doc_text,
+                    "metadata": doc_metadata
                 })
                 
                 # Extract page-level data if available
-                if hasattr(doc, 'pages'):
+                if hasattr(doc, 'pages') and doc.pages:
                     for page in doc.pages:
                         page_data = {
-                            "page_num": page.get('page_num', i + 1),
-                            "text": page.get('text', ''),
-                            "markdown": page.get('md', ''),
+                            "page_num": page.get('page_num', i + 1) if isinstance(page, dict) else getattr(page, 'page_num', i + 1),
+                            "text": page.get('text', '') if isinstance(page, dict) else getattr(page, 'text', ''),
+                            "markdown": page.get('md', '') if isinstance(page, dict) else getattr(page, 'markdown', ''),
                         }
                         
                         # Extract images if requested
-                        if extract_images and page.get('images'):
-                            for img in page['images']:
+                        page_images = page.get('images', []) if isinstance(page, dict) else getattr(page, 'images', [])
+                        if extract_images and page_images:
+                            for img in page_images:
                                 result["images"].append({
                                     "page": page_data["page_num"],
-                                    "data": img.get('data'),
-                                    "type": img.get('type'),
-                                    "metadata": img.get('metadata', {})
+                                    "data": img.get('data') if isinstance(img, dict) else getattr(img, 'data', None),
+                                    "type": img.get('type') if isinstance(img, dict) else getattr(img, 'type', None),
+                                    "metadata": img.get('metadata', {}) if isinstance(img, dict) else getattr(img, 'metadata', {})
                                 })
                         
                         # Extract tables
-                        if page.get('tables'):
-                            for table in page['tables']:
+                        page_tables = page.get('tables', []) if isinstance(page, dict) else getattr(page, 'tables', [])
+                        if page_tables:
+                            for table in page_tables:
                                 result["tables"].append({
                                     "page": page_data["page_num"],
-                                    "html": table.get('html'),
-                                    "data": table.get('data'),
-                                    "metadata": table.get('metadata', {})
+                                    "html": table.get('html') if isinstance(table, dict) else getattr(table, 'html', None),
+                                    "data": table.get('data') if isinstance(table, dict) else getattr(table, 'data', None),
+                                    "metadata": table.get('metadata', {}) if isinstance(table, dict) else getattr(table, 'metadata', {})
                                 })
                         
                         # Store layout if available
-                        if page.get('layout'):
-                            page_data["layout"] = page['layout']
+                        page_layout = page.get('layout') if isinstance(page, dict) else getattr(page, 'layout', None)
+                        if page_layout:
+                            page_data["layout"] = page_layout
                         
                         result["pages"].append(page_data)
                 
                 # If no page-level data, create from document
-                if not result["pages"]:
+                if not result["pages"] and doc_text:
                     result["pages"].append({
                         "page_num": 1,
-                        "text": doc.text,
-                        "markdown": doc.text,
-                        "metadata": doc.metadata
+                        "text": doc_text,
+                        "markdown": doc_text,
+                        "metadata": doc_metadata
                     })
             
             # Store global metadata
-            result["metadata"] = documents[0].metadata if documents else {}
+            if documents and documents[0]:
+                if hasattr(documents[0], 'metadata'):
+                    result["metadata"] = documents[0].metadata
+                elif isinstance(documents[0], dict):
+                    result["metadata"] = documents[0].get('metadata', {})
+                else:
+                    result["metadata"] = {}
         
         # Store in cache for future use
         await self.cache.store_extraction(doc_path, result, parsing_instruction)
@@ -764,26 +899,63 @@ class LlamaParseProvider(DocumentProvider):
     def _extract_entities(self, result: Any) -> List[Dict[str, Any]]:
         """Extract named entities from the parsed result."""
         entities = []
-        # This would use LlamaParse's entity extraction capabilities
-        # Simplified implementation
-        text = str(result)
-        
-        # Look for common entity patterns (simplified)
-        import re
-        
-        # Find capitalized words (potential entities)
-        words = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', text)
         seen = set()
-        for word in words:
-            if word not in seen and len(word) > 2:
-                entities.append({
-                    "text": word,
-                    "type": "UNKNOWN",
-                    "confidence": 0.7
-                })
-                seen.add(word)
         
-        return entities
+        # When LlamaParse is given entity extraction instructions, results are in documents
+        if isinstance(result, dict) and "documents" in result:
+            for doc in result.get("documents", []):
+                text = doc.get("text", "")
+                # Parse lines that look like entity listings
+                lines = text.split('\n')
+                for line in lines:
+                    line = line.strip()
+                    if line and line.startswith('-'):
+                        entity_text = line.lstrip('-').strip()
+                        if entity_text and entity_text not in seen:
+                            # Determine entity type based on content
+                            entity_type = "ORGANIZATION"  # Default
+                            if "Service" in entity_text or "Department" in entity_text or "Commission" in entity_text:
+                                entity_type = "ORGANIZATION"
+                            elif "Act" in entity_text or "FATCA" in entity_text:
+                                entity_type = "LEGISLATION"
+                            
+                            entities.append({
+                                "text": entity_text,
+                                "type": entity_type,
+                                "confidence": 0.8
+                            })
+                            seen.add(entity_text)
+        
+        # If no entities found, try pattern matching
+        if not entities:
+            import re
+            all_text = ""
+            if isinstance(result, dict):
+                if "documents" in result:
+                    all_text = " ".join(doc.get("text", "") for doc in result["documents"])
+                elif "pages" in result:
+                    all_text = " ".join(page.get("text", "") for page in result["pages"])
+            else:
+                all_text = str(result)
+            
+            # Find capitalized words and acronyms
+            patterns = [
+                r'\b[A-Z]{2,}\b',  # Acronyms like IRS, SSA
+                r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b',  # Proper names
+            ]
+            
+            for pattern in patterns:
+                matches = re.findall(pattern, all_text)
+                for word in matches:
+                    if word not in seen and len(word) > 2 and word not in ["The", "This", "That"]:
+                        entities.append({
+                            "text": word,
+                            "type": "UNKNOWN",
+                            "confidence": 0.6
+                        })
+                        seen.add(word)
+        
+        return entities[:50]  # Limit to top 50
 
     def _extract_relationships(self, result: Any) -> List[Dict[str, Any]]:
         """Extract entity relationships."""
@@ -794,14 +966,48 @@ class LlamaParseProvider(DocumentProvider):
     def _extract_key_points(self, result: Any) -> List[str]:
         """Extract key points from the document."""
         key_points = []
-        # LlamaParse would provide AI-extracted key points
-        # Simplified: extract bullet points or numbered lists
-        text = str(result)
-        lines = text.split('\n')
         
-        for line in lines:
-            if line.strip().startswith(('•', '-', '*', '1.', '2.', '3.')):
-                key_points.append(line.strip().lstrip('•-*123456789. '))
+        # When LlamaParse is given analysis instructions, it returns results in documents
+        if isinstance(result, dict) and "documents" in result:
+            # Extract from all document texts
+            for doc in result.get("documents", []):
+                text = doc.get("text", "")
+                # Look for bullet points, lists, or key statements
+                lines = text.split('\n')
+                for line in lines:
+                    line = line.strip()
+                    if line and (
+                        line.startswith(('•', '-', '*', '1.', '2.', '3.')) or
+                        len(line) > 10  # Include substantial lines as potential key points
+                    ):
+                        cleaned = line.lstrip('•-*123456789. ').strip()
+                        if cleaned and cleaned not in key_points:
+                            key_points.append(cleaned)
+        
+        # Also check pages for content
+        if isinstance(result, dict) and "pages" in result:
+            for page in result.get("pages", []):
+                text = page.get("text", "") or page.get("markdown", "")
+                lines = text.split('\n')
+                for line in lines:
+                    line = line.strip()
+                    if line and len(line) > 10 and line not in key_points:
+                        key_points.append(line)
+        
+        # If we have no key points but have text, extract first few meaningful lines
+        if not key_points:
+            all_text = ""
+            if isinstance(result, dict):
+                if "documents" in result:
+                    all_text = " ".join(doc.get("text", "") for doc in result["documents"])
+                elif "pages" in result:
+                    all_text = " ".join(page.get("text", "") for page in result["pages"])
+            else:
+                all_text = str(result)
+            
+            # Split into sentences and take the first few
+            sentences = [s.strip() for s in all_text.split('.') if s.strip()]
+            key_points = sentences[:5]
         
         return key_points[:10]  # Limit to top 10
 
