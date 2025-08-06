@@ -5,13 +5,37 @@ All notable changes to Docsray MCP will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-08-06
+
+### 🚀 New Release
+
+#### Package Updates
+- **Version Bump**: Updated to version 0.3.0 for PyPI release
+- **License Fix**: Removed deprecated license classifier for modern setuptools compatibility
+- **Build System**: Updated build configuration for PEP 639 compliance
+
+#### Testing Improvements
+- **LlamaParse Integration Tests**: Fixed cache test to use correct `cache_directory` field
+- **Test Coverage**: All LlamaParse integration tests now passing with API key
+- **Test Data**: Added sample PDF generation for integration testing
+
+#### Documentation Updates
+- **Domain Migration**: Updated all references to new docsray.dev domain
+- **Docusaurus Site**: Refocused documentation for human users rather than AI agents
+- **Installation**: Updated uvx command examples in documentation
+
+### 🐛 Bug Fixes
+- Fixed LlamaParse cache test assertion to match actual cache info structure
+- Resolved package build errors related to license configuration
+- Corrected test data requirements for integration tests
+
 ## [0.2.0] - 2025-08-06
 
 ### 🚀 Published to PyPI
 
 - **PyPI Release**: Package now available at [https://pypi.org/project/docsray-mcp/](https://pypi.org/project/docsray-mcp/)
 - **TestPyPI Release**: Testing version at [https://test.pypi.org/project/docsray-mcp/](https://test.pypi.org/project/docsray-mcp/)
-- **Installation**: `pip install docsray-mcp` or `uvx --from docsray-mcp docsray`
+- **Installation**: `pip install docsray-mcp` or `uvx docsray-mcp`
 - **Executable**: Package provides `docsray` command (not `docsray-mcp`)
 
 ## [0.2.0] - 2025-08-05

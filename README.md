@@ -52,13 +52,15 @@
 ### Quick Start with uvx (Recommended)
 
 ```bash
-# Run directly without installation (use the correct executable name)
-uvx --from docsray-mcp docsray
+# Run directly without installation
+uvx docsray-mcp
 
 # Or install globally
 uv tool install docsray-mcp
-# Then run with:
+# Then run with either:
 docsray
+# or
+docsray-mcp
 ```
 
 ### Alternative: Install with pip
@@ -101,7 +103,7 @@ Add to your Cursor settings:
   "mcpServers": {
     "docsray": {
       "command": "uvx",
-      "args": ["--from", "docsray-mcp", "docsray"],
+      "args": ["docsray-mcp"],
       "env": {
         "LLAMAPARSE_API_KEY": "llx-your-key-here"
       }
@@ -119,7 +121,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "docsray": {
       "command": "uvx",
-      "args": ["--from", "docsray-mcp", "docsray"],
+      "args": ["docsray-mcp"],
       "env": {
         "LLAMAPARSE_API_KEY": "llx-your-key-here"
       }

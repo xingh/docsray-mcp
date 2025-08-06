@@ -35,7 +35,7 @@ function HomepageHeader() {
 pip install docsray-mcp
 
 # Run with uvx (recommended for MCP clients)
-uvx --from docsray-mcp docsray
+uvx docsray-mcp
 
 # Configure in Claude Desktop or Cursor, then use:
 "Xray document.pdf with provider llama-parse"`}

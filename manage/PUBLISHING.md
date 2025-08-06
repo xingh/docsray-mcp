@@ -153,13 +153,16 @@ Or for global installation:
 uv tool install docsray-mcp
 ```
 
-**Note**: The executable is named `docsray` (not `docsray-mcp`), so use:
+**Note**: Since version 0.2.1, we provide both `docsray-mcp` and `docsray` executables:
 ```bash
-# Run directly without installation
+# Run directly without installation (recommended)
+uvx docsray-mcp
+
+# Legacy command (still works)
 uvx --from docsray-mcp docsray
 
 # After global installation
-docsray
+docsray-mcp  # or docsray
 ```
 
 ## Installing from TestPyPI
@@ -255,21 +258,24 @@ uv add --editable .
 
 ### Running the CLI
 
-The executable is named `docsray` (not `docsray-mcp`):
+Since version 0.2.1, we provide both `docsray-mcp` and `docsray` executables:
 
 ```bash
-# Run directly with uvx
+# Run directly with uvx (recommended)
+uvx docsray-mcp
+
+# Legacy command (still works)
 uvx --from docsray-mcp docsray
 
 # If installed globally with uv tool
-docsray
+docsray-mcp  # or docsray
 
 # If installed in project
-uv run docsray
+uv run docsray-mcp  # or docsray
 
 # Or activate the environment first
 source .venv/bin/activate  # or `uv shell`
-docsray
+docsray-mcp  # or docsray
 ```
 
 ## Troubleshooting
@@ -410,7 +416,8 @@ twine upload dist/*
 # Install from PyPI
 pip install docsray-mcp
 uv add docsray-mcp
-uvx --from docsray-mcp docsray  # Run directly
+uvx docsray-mcp  # Run directly (recommended)
+uvx --from docsray-mcp docsray  # Legacy command
 
 # Install from TestPyPI
 pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ docsray-mcp

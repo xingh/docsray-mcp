@@ -38,7 +38,7 @@ Docsray is a **Model Context Protocol (MCP) server**, not a standalone CLI tool.
 pip install docsray-mcp
 
 # Or run directly with uvx
-uvx --from docsray-mcp docsray
+uvx docsray-mcp
 ```
 
 ### Configuration (One-time setup)
@@ -50,7 +50,7 @@ Configure Claude Desktop to connect to Docsray:
   "mcpServers": {
     "docsray": {
       "command": "uvx",
-      "args": ["--from", "docsray-mcp", "docsray"],
+      "args": ["docsray-mcp"],
       "env": {
         "LLAMAPARSE_API_KEY": "your-key-here"
       }

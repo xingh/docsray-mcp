@@ -79,8 +79,8 @@ class TestLlamaParseIntegration:
         # Check cache was created
         cache_info = cache.get_cache_info(test_document)
         if cache_info:  # Cache might not be created if API call fails
-            assert cache_info.get('path') is not None
-            assert len(cache_info.get('files', [])) > 0
+            assert cache_info.get('cache_directory') is not None
+            assert cache_info.get('statistics', {}).get('cache_size_bytes', 0) > 0
     
     @pytest.mark.asyncio
     async def test_llamaparse_xray_extraction(self, config_with_llamaparse, test_document):

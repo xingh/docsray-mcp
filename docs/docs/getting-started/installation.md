@@ -65,7 +65,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "docsray": {
       "command": "uvx",
-      "args": ["--from", "docsray-mcp", "docsray"],
+      "args": ["docsray-mcp"],
       "env": {
         "LLAMAPARSE_API_KEY": "your-api-key-here"
       }
@@ -82,7 +82,7 @@ Edit `%APPDATA%\Claude\claude_desktop_config.json`:
   "mcpServers": {
     "docsray": {
       "command": "uvx",
-      "args": ["--from", "docsray-mcp", "docsray"],
+      "args": ["docsray-mcp"],
       "env": {
         "LLAMAPARSE_API_KEY": "your-api-key-here"
       }
