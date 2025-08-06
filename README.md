@@ -9,7 +9,7 @@
 
 **Docsray** is a powerful Model Context Protocol (MCP) server that gives AI assistants like Claude advanced document perception capabilities. Extract text, navigate pages, analyze structure, and understand any document with ease.
 
-**✅ Status: Phase 1 Complete with LlamaParse Integration - Working in Cursor and other MCP clients**
+**✅ Status: Published to PyPI and TestPyPI - Working in Cursor, Claude Desktop, and other MCP clients**
 
 ## ✨ Features
 
@@ -52,11 +52,13 @@
 ### Quick Start with uvx (Recommended)
 
 ```bash
-# Run directly without installation
-uvx docsray-mcp
+# Run directly without installation (use the correct executable name)
+uvx --from docsray-mcp docsray
 
 # Or install globally
 uv tool install docsray-mcp
+# Then run with:
+docsray
 ```
 
 ### Alternative: Install with pip
@@ -99,7 +101,7 @@ Add to your Cursor settings:
   "mcpServers": {
     "docsray": {
       "command": "uvx",
-      "args": ["docsray-mcp"],
+      "args": ["--from", "docsray-mcp", "docsray"],
       "env": {
         "LLAMAPARSE_API_KEY": "llx-your-key-here"
       }
@@ -117,7 +119,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "docsray": {
       "command": "uvx",
-      "args": ["docsray-mcp"],
+      "args": ["--from", "docsray-mcp", "docsray"],
       "env": {
         "LLAMAPARSE_API_KEY": "llx-your-key-here"
       }

@@ -5,7 +5,14 @@
 ### From PyPI (Recommended)
 
 ```bash
+# Install with pip
 pip install docsray-mcp
+
+# Or run directly with uvx
+uvx --from docsray-mcp docsray
+
+# Or install globally with uv
+uv tool install docsray-mcp
 ```
 
 ### From Source
@@ -44,6 +51,9 @@ cp .env.example .env
 Key configuration options:
 
 ```bash
+# LlamaParse API key for AI features (optional)
+LLAMAPARSE_API_KEY=llx-your-key-here
+
 # Transport mode
 DOCSRAY_TRANSPORT=stdio  # or http
 
