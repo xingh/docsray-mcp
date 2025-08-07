@@ -38,7 +38,7 @@ Docsray is a **Model Context Protocol (MCP) server**, not a standalone CLI tool.
 pip install docsray-mcp
 
 # Or run directly with uvx
-uvx docsray-mcp
+uvx docsray-mcp start
 ```
 
 ### Configuration (One-time setup)

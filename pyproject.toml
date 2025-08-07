@@ -1,6 +1,6 @@
 [project]
 name = "docsray-mcp"
-version = "0.3.1"
+version = "0.3.3"
 description = "AI-powered document perception and analysis MCP server with intelligent provider selection"
 authors = [
     {name = "Docsray Team", email = "team@docsray.dev"}
@@ -60,10 +60,10 @@ docsray = "docsray.cli:main"
 docsray-mcp = "docsray.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/docsray/docsray-mcp"
-Documentation = "https://docs.docsray.dev"
-Repository = "https://github.com/docsray/docsray-mcp"
-Issues = "https://github.com/docsray/docsray-mcp/issues"
+Homepage = "https://docsray.dev"
+Documentation = "https://docsray.dev"
+Repository = "https://github.com/xingh/docsray-mcp"
+Issues = "https://github.com/xingh/docsray-mcp/issues"
 
 [build-system]
 requires = ["setuptools>=69.0", "wheel"]

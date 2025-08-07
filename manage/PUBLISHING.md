@@ -156,7 +156,7 @@ uv tool install docsray-mcp
 **Note**: Since version 0.2.1, we provide both `docsray-mcp` and `docsray` executables:
 ```bash
 # Run directly without installation (recommended)
-uvx docsray-mcp
+uvx docsray-mcp start
 
 # Legacy command (still works)
 uvx --from docsray-mcp docsray
@@ -262,7 +262,7 @@ Since version 0.2.1, we provide both `docsray-mcp` and `docsray` executables:
 
 ```bash
 # Run directly with uvx (recommended)
-uvx docsray-mcp
+uvx docsray-mcp start
 
 # Legacy command (still works)
 uvx --from docsray-mcp docsray
@@ -416,7 +416,7 @@ twine upload dist/*
 # Install from PyPI
 pip install docsray-mcp
 uv add docsray-mcp
-uvx docsray-mcp  # Run directly (recommended)
+uvx docsray-mcp start  # Run directly (recommended)
 uvx --from docsray-mcp docsray  # Legacy command
 
 # Install from TestPyPI

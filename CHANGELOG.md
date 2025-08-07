@@ -5,6 +5,40 @@ All notable changes to Docsray MCP will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2025-08-06
+
+### 🔗 Updated URLs
+
+#### Fixed
+- **Homepage**: Updated to https://docsray.dev (main website)
+- **Documentation**: Points to https://docsray.dev 
+- **Repository**: Updated to new location https://github.com/xingh/docsray-mcp
+- **Issues**: Updated to https://github.com/xingh/docsray-mcp/issues
+
+This ensures PyPI and package metadata show the correct project URLs.
+
+## [0.3.2] - 2025-08-06
+
+### 📚 Documentation Update
+
+#### Fixed
+- **Startup Command**: Updated all documentation to show correct startup command `uvx docsray-mcp start`
+- **CLI Usage**: Clarified that `docsray-mcp` requires subcommands (start, test, list-providers)
+- **Installation Guide**: Updated examples to include the `start` subcommand
+
+#### Package Improvements
+- Both `docsray` and `docsray-mcp` executables now available
+- Enables `uvx docsray-mcp start` to work correctly
+- Maintains backward compatibility with `docsray start`
+
+## [0.3.1] - 2025-08-06
+
+### 🐛 Bug Fix
+
+#### Fixed
+- Added `docsray-mcp` entry point to enable `uvx docsray-mcp` command
+- Package now provides both `docsray` and `docsray-mcp` executables
+
 ## [0.3.0] - 2025-08-06
 
 ### 🚀 New Release

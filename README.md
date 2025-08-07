@@ -53,14 +53,14 @@
 
 ```bash
 # Run directly without installation
-uvx docsray-mcp
+uvx docsray-mcp start
 
 # Or install globally
 uv tool install docsray-mcp
-# Then run with either:
-docsray
+# Then run with:
+docsray start
 # or
-docsray-mcp
+docsray-mcp start
 ```
 
 ### Alternative: Install with pip

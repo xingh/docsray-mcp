@@ -9,7 +9,7 @@
 pip install docsray-mcp
 
 # Or run directly with uvx
-uvx docsray-mcp
+uvx docsray-mcp start
 
 # Or install globally with uv
 uv tool install docsray-mcp
