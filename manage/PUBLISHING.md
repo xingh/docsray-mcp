@@ -4,7 +4,7 @@
 
 - **PyPI**: [https://pypi.org/project/docsray-mcp/](https://pypi.org/project/docsray-mcp/)
 - **TestPyPI**: [https://test.pypi.org/project/docsray-mcp/](https://test.pypi.org/project/docsray-mcp/)
-- **Current Version**: 0.2.0
+- **Current Version**: 0.3.4
 
 This document covers how to publish the `docsray-mcp` package to PyPI and TestPyPI, and how to install it using various package managers.
 

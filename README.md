@@ -76,6 +76,29 @@ pip install "docsray-mcp[ai]"
 pip install -e ".[dev]"
 ```
 
+### 🐳 Docker Installation
+
+```bash
+# Quick start with Docker Compose
+git clone https://github.com/xingh/docsray-mcp
+cd docsray-mcp
+docker-compose up docsray-mcp
+
+# Or run directly with Docker
+docker run -it --rm ghcr.io/xingh/docsray-mcp:latest
+
+# HTTP mode for web integrations
+docker run -it --rm -p 3000:3000 -e DOCSRAY_TRANSPORT=http ghcr.io/xingh/docsray-mcp:latest
+```
+
+**Development with VS Code DevContainer:**
+1. Install the "Dev Containers" extension
+2. Open project in VS Code
+3. Click "Reopen in Container"
+4. Includes Claude Desktop pre-configured!
+
+See [Docker Guide](docs/docker.md) for complete documentation.
+
 ## 🚀 Quick Start
 
 ### 1. Set up API Keys (Optional but Recommended)

@@ -1,0 +1,128 @@
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Testing and coverage
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+.coverage.*
+htmlcov/
+.nyc_output
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Documentation build
+docs/_build/
+docs/build/
+.sphinx/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment files (security)
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# Logs
+*.log
+logs/
+
+# Cache directories
+.cache/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker files (avoid recursive copying)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Development containers
+.devcontainer/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Documentation that's not needed in container (but keep README.md and LICENSE for build)
+CHANGELOG.md
+CONTRIBUTING.md
+docs/*.md
+
+# Manage and development files
+manage/
+scripts/
+tools/
+
+# Test files
+tests/
+test_*.py
+*_test.py
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

@@ -1,8 +1,8 @@
-# Docsray MCP Framework Specification
+# Formuli.Docsray.MCP Framework Specification
 
 ## Executive Summary
 
-Docsray is a modular Model Context Protocol (MCP) framework for advanced document perception and understanding. It provides a unified interface for multiple document processing backends including pymupdf4llm, pytesseract, ocrmypdf, mistral-ocr, and llama-parse, exposed through standardized MCP tool endpoints. The framework supports both SSE and HTTP transport modes, handles diverse document formats, and enables intelligent provider selection based on document characteristics and processing requirements.
+Formuli.Docsray.MCP (formuli-docsray-mcp) is a comprehensive Model Context Protocol (MCP) framework for advanced document perception and understanding. It provides a unified interface for multiple document processing backends including pymupdf4llm, IBM.Docling, MIMIC.DocsRay capabilities, and llama-parse, exposed through standardized MCP tool endpoints. The framework conforms to ChatGPT MCP specifications while offering seven powerful tools: search, fetch, seek, peek, map, xray, and extract. It supports both SSE and HTTP transport modes, handles diverse document formats, and enables intelligent provider selection based on document characteristics and processing requirements.
 
 ## 1. System Architecture Overview
 
@@ -24,16 +24,16 @@ Docsray is a modular Model Context Protocol (MCP) framework for advanced documen
 │  └─────────────────────────────────────────────────────┘   │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                Tool Registry & Router               │   │
-│  │  ├─ seek    ├─ peek    ├─ map                       │   │
-│  │  ├─ xray    └─ extract                              │   │
+│  │  ├─ search  ├─ fetch   ├─ seek    ├─ peek           │   │
+│  │  ├─ map     ├─ xray    └─ extract                   │   │
 │  └─────────────────────────────────────────────────────┘   │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │              Provider Abstraction Layer             │   │
 │  └─────────────────────────────────────────────────────┘   │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                 Provider Registry                   │   │
-│  │  ├─ PyMuPDF4LLM  ├─ PyTesseract  ├─ OCRmyPDF        │   │
-│  │  ├─ MistralOCR   └─ LlamaParse                      │   │
+│  │  ├─ PyMuPDF4LLM  ├─ IBM.Docling  ├─ LlamaParse      │   │
+│  │  ├─ MIMIC.DocsRay └─ PyTesseract                    │   │
 │  └─────────────────────────────────────────────────────┘   │
 └────────────────────────────────────────────────────────────┘
 ```
@@ -65,19 +65,22 @@ interface DocsrayConfig {
       enabled: boolean;
       config?: PyMuPDFConfig;
     };
+    ibmDocling?: {
+      enabled: boolean;
+      useVLM?: boolean;  // Visual Language Model
+      useASR?: boolean;  // Audio Speech Recognition
+      outputFormat?: 'DoclingDocument' | 'markdown' | 'json';
+    };
+    mimicDocsRay?: {
+      enabled: boolean;
+      searchStrategy?: 'coarse-to-fine' | 'semantic';
+      ocrMode?: 'hybrid' | 'ai' | 'pytesseract';
+      multimodal?: boolean;
+    };
     pytesseract?: {
       enabled: boolean;
       tesseractPath?: string;
       languages?: string[];
-    };
-    ocrmypdf?: {
-      enabled: boolean;
-      config?: OCRmyPDFConfig;
-    };
-    mistralOcr?: {
-      enabled: boolean;
-      apiKey: string;
-      baseUrl?: string;
     };
     llamaParse?: {
       enabled: boolean;
@@ -140,7 +143,126 @@ interface DocsrayConfig {
 
 ## 3. Tool Endpoint Specifications
 
-### 3.1 Seek Endpoint
+### 3.1 Search Endpoint (NEW - ChatGPT MCP Compliant)
+
+**Purpose**: Find documents in the filesystem using intelligent coarse-to-fine search methodology from MIMIC.DocsRay
+
+**Tool Definition:**
+```typescript
+{
+  name: "docsray_search",
+  description: "Search for documents in the filesystem using intelligent coarse-to-fine search",
+  inputSchema: {
+    type: "object",
+    properties: {
+      query: {
+        type: "string",
+        description: "Search query for finding documents"
+      },
+      searchPath: {
+        type: "string",
+        default: "./",
+        description: "Base path to search within"
+      },
+      searchStrategy: {
+        type: "string",
+        enum: ["coarse-to-fine", "semantic", "keyword", "hybrid"],
+        default: "coarse-to-fine",
+        description: "Search strategy inspired by MIMIC.DocsRay"
+      },
+      fileTypes: {
+        type: "array",
+        items: { type: "string" },
+        default: ["pdf", "docx", "md", "txt"],
+        description: "File types to include in search"
+      },
+      maxResults: {
+        type: "integer",
+        default: 10,
+        description: "Maximum number of results to return"
+      },
+      provider: {
+        type: "string",
+        enum: ["auto", "mimic-docsray", "filesystem"],
+        default: "auto"
+      }
+    },
+    required: ["query"]
+  }
+}
+```
+
+**Implementation Logic:**
+1. Coarse search: Fast filesystem scanning and metadata matching
+2. Fine search: Content analysis using selected provider
+3. Ranking: MIMIC.DocsRay's semantic ranking algorithm
+4. Return: Sorted results with relevance scores and snippets
+
+### 3.2 Fetch Endpoint (NEW - ChatGPT MCP Compliant)
+
+**Purpose**: Unified document retrieval from web URLs or filesystem paths
+
+**Tool Definition:**
+```typescript
+{
+  name: "docsray_fetch",
+  description: "Fetch documents from web URLs or filesystem paths",
+  inputSchema: {
+    type: "object",
+    properties: {
+      source: {
+        type: "string",
+        description: "URL (https://) or filesystem path to fetch"
+      },
+      fetchOptions: {
+        type: "object",
+        properties: {
+          headers: {
+            type: "object",
+            description: "HTTP headers for web fetches"
+          },
+          timeout: {
+            type: "integer",
+            default: 30000,
+            description: "Timeout in milliseconds"
+          },
+          followRedirects: {
+            type: "boolean",
+            default: true
+          }
+        }
+      },
+      cacheStrategy: {
+        type: "string",
+        enum: ["use-cache", "bypass-cache", "refresh-cache"],
+        default: "use-cache",
+        description: "Caching strategy for fetched documents"
+      },
+      returnFormat: {
+        type: "string",
+        enum: ["raw", "processed", "metadata-only"],
+        default: "raw",
+        description: "Format of returned document"
+      },
+      provider: {
+        type: "string",
+        enum: ["auto", "direct", "cached"],
+        default: "auto"
+      }
+    },
+    required: ["source"]
+  }
+}
+```
+
+**Implementation Logic:**
+1. Detect source type (URL vs filesystem path)
+2. For URLs: HTTP fetch with headers and timeout
+3. For filesystem: Direct file access with validation
+4. Apply caching strategy using .docsray cache
+5. Return in requested format
+
+### 3.3 Seek Endpoint
 
 **Purpose**: Navigate to specific pages or sections within documents
 
@@ -200,7 +322,7 @@ interface DocsrayConfig {
 3. Extract content if requested
 4. Return navigation result with context
 
-### 3.2 Peek Endpoint
+### 3.4 Peek Endpoint
 
 **Purpose**: Get document structure and overview without full extraction
 
@@ -263,7 +385,7 @@ interface DocsrayConfig {
 }
 ```
 
-### 3.3 Map Endpoint
+### 3.5 Map Endpoint
 
 **Purpose**: Generate comprehensive document structure map
 
@@ -341,7 +463,7 @@ interface DocsrayConfig {
 }
 ```
 
-### 3.4 Xray Endpoint
+### 3.6 Xray Endpoint
 
 **Purpose**: Deep content analysis and extraction with AI-powered understanding
 
@@ -380,7 +502,7 @@ interface DocsrayConfig {
 }
 ```
 
-### 3.5 Extract Endpoint
+### 3.7 Extract Endpoint
 
 **Purpose**: Extract specific data types or content from documents
 
@@ -966,16 +1088,54 @@ docsray test --provider llama-parse --document sample.pdf
 - ✅ Build system compliance with PEP 639
 - ✅ Version 0.3.0 released with all bug fixes
 
-### Future Enhancements (v0.4.0+)
-- 🔄 PyTesseract Provider for OCR support
-- 🔄 Mistral OCR Provider for AI-powered OCR
+### Phase 7: ChatGPT MCP Compliance (v0.4.0) 🆕
+- 🔄 Search endpoint - ChatGPT MCP-compliant document discovery with MIMIC.DocsRay coarse-to-fine methodology
+- 🔄 Fetch endpoint - Unified document retrieval from web/filesystem conforming to ChatGPT MCP specs
+- 🔄 Enhanced caching strategies for fetched documents
+- 🔄 Progress reporting for large file operations
+
+### Phase 8: IBM.Docling Integration (v0.5.0) 🆕
+- 🔄 IBM.Docling provider implementation
+- 🔄 DoclingDocument unified format support
+- 🔄 Advanced PDF layout understanding
+- 🔄 Visual Language Model (VLM) integration
+- 🔄 ASR support for audio file processing
+- 🔄 Structured information extraction
+- 🔄 Enhanced table and image classification
+
+### Phase 9: MIMIC.DocsRay Integration (v0.6.0) 🆕
+- 🔄 Coarse-to-fine search methodology for search endpoint
+- 🔄 Advanced RAG capabilities
+- 🔄 Multimodal AI for visual content analysis
+- 🔄 Hybrid OCR (AI + Pytesseract) implementation
+- 🔄 Document chunking strategies for map endpoint
+- 🔄 Semantic ranking algorithms
+
+### Phase 10: Unified Provider Strategy (v0.7.0) 🆕
+- 🔄 Provider selection matrix implementation
+- 🔄 Multi-provider consensus for higher accuracy
+- 🔄 Intelligent fallback chains: IBM.Docling → LlamaParse → PyMuPDF4LLM
+- 🔄 Provider capability scoring system
+- 🔄 Dynamic provider routing based on document characteristics
+
+### Future Enhancements (v0.8.0+)
+- 🔄 PyTesseract Provider for standalone OCR support
 - 🔄 Batch processing for multiple documents
 - 🔄 Advanced analytics and document comparison
 - 🔄 Plugin SDK for third-party providers
 - 🔄 Cloud storage integration (S3, GCS, Azure)
 - 🔄 Multi-modal analysis (combined text/image/table)
 - 🔄 WebAssembly support for browser-based processing
+- 🔄 Mathematical formula extraction and rendering
+- 🔄 Citation network analysis for academic papers
 
 ## Conclusion
 
-The Docsray MCP framework provides a powerful, extensible solution for document processing that leverages the best features of multiple document processing libraries and APIs. By following MCP protocol standards and implementing intelligent provider selection, comprehensive error handling, and performance optimizations, Docsray enables reliable, high-quality document understanding capabilities for AI applications.
+Formuli.Docsray.MCP provides the most comprehensive document processing solution in the MCP ecosystem by combining:
+- **ChatGPT MCP Compliance**: Full compatibility with standard MCP specifications through search and fetch endpoints
+- **Seven Powerful Tools**: Complete document toolkit (search, fetch, seek, peek, map, xray, extract)
+- **Best-in-Class Providers**: IBM.Docling's advanced layout understanding, MIMIC.DocsRay's intelligent search and multimodal capabilities, plus existing LlamaParse and PyMuPDF4LLM providers
+- **Intelligent Routing**: Automatic selection of optimal provider for each task and document type
+- **Unified Experience**: Single interface for all document operations from discovery to deep analysis
+
+By integrating the innovations from IBM Research (Docling) and MIMIC Lab (DocsRay) with existing capabilities, Formuli.Docsray.MCP establishes itself as the definitive document intelligence platform for AI applications.

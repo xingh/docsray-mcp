@@ -1,0 +1,111 @@
+# Docker Compose for Docsray MCP Server
+# Production and development configurations
+
+version: '3.8'
+
+services:
+  # Production MCP server (stdio mode)
+  docsray-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: docsray-mcp
+    restart: unless-stopped
+    environment:
+      - DOCSRAY_TRANSPORT=stdio
+      - DOCSRAY_LOG_LEVEL=INFO
+      - DOCSRAY_PYMUPDF_ENABLED=true
+      - DOCSRAY_CACHE_ENABLED=true
+      - DOCSRAY_CACHE_TTL=3600
+    volumes:
+      # Mount cache directory for persistence
+      - docsray-cache:/app/cache
+      # Mount logs directory
+      - docsray-logs:/app/logs
+      # Mount data directory for document processing
+      - docsray-data:/app/data
+    stdin_open: true
+    tty: true
+    networks:
+      - docsray-network
+
+  # HTTP mode server (for web integrations)
+  docsray-http:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: docsray-http
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DOCSRAY_TRANSPORT=http
+      - DOCSRAY_HTTP_HOST=0.0.0.0
+      - DOCSRAY_HTTP_PORT=3000
+      - DOCSRAY_LOG_LEVEL=INFO
+      - DOCSRAY_PYMUPDF_ENABLED=true
+      - DOCSRAY_CACHE_ENABLED=true
+    volumes:
+      - docsray-cache:/app/cache
+      - docsray-logs:/app/logs
+      - docsray-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - docsray-network
+
+  # Development server with all features enabled
+  docsray-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: docsray-dev
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - DOCSRAY_TRANSPORT=http
+      - DOCSRAY_HTTP_HOST=0.0.0.0
+      - DOCSRAY_HTTP_PORT=3000
+      - DOCSRAY_LOG_LEVEL=DEBUG
+      - DOCSRAY_PYMUPDF_ENABLED=true
+      - DOCSRAY_PYTESSERACT_ENABLED=true
+      - DOCSRAY_CACHE_ENABLED=true
+      # Add your API keys via .env file or environment
+      # - DOCSRAY_LLAMAPARSE_API_KEY=${LLAMAPARSE_API_KEY}
+      # - DOCSRAY_MISTRAL_API_KEY=${MISTRAL_API_KEY}
+    volumes:
+      # Mount source code for development
+      - .:/app
+      - docsray-cache:/app/cache
+      - docsray-logs:/app/logs
+      - docsray-data:/app/data
+    stdin_open: true
+    tty: true
+    networks:
+      - docsray-network
+    profiles:
+      - dev
+
+networks:
+  docsray-network:
+    driver: bridge
+    name: docsray-network
+
+volumes:
+  docsray-cache:
+    driver: local
+    name: docsray-cache
+  docsray-logs:
+    driver: local
+    name: docsray-logs
+  docsray-data:
+    driver: local
+    name: docsray-data

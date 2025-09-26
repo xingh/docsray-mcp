@@ -1,0 +1,171 @@
+# Production Docker Compose for Docsray MCP Server
+# Optimized for production deployment with monitoring and logging
+
+version: '3.8'
+
+services:
+  docsray-mcp:
+    image: ghcr.io/xingh/docsray-mcp:latest
+    container_name: docsray-mcp-prod
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    
+    environment:
+      # Production configuration
+      - DOCSRAY_TRANSPORT=stdio
+      - DOCSRAY_LOG_LEVEL=INFO
+      - DOCSRAY_PYMUPDF_ENABLED=true
+      - DOCSRAY_CACHE_ENABLED=true
+      - DOCSRAY_CACHE_TTL=7200  # 2 hours
+      
+      # Security
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    
+    volumes:
+      # Persistent storage
+      - docsray-cache:/app/cache
+      - docsray-logs:/app/logs
+      - docsray-data:/app/data
+      
+      # Configuration (optional)
+      - ./config/production.env:/app/.env:ro
+    
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import docsray; print(\"OK\")'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    
+    stdin_open: true
+    tty: true
+    
+    networks:
+      - docsray-network
+    
+    # Logging configuration
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # HTTP endpoint for web integrations
+  docsray-http:
+    image: ghcr.io/xingh/docsray-mcp:latest
+    container_name: docsray-http-prod
+    restart: unless-stopped
+    
+    ports:
+      - "127.0.0.1:3000:3000"  # Bind to localhost only
+    
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    
+    environment:
+      - DOCSRAY_TRANSPORT=http
+      - DOCSRAY_HTTP_HOST=0.0.0.0
+      - DOCSRAY_HTTP_PORT=3000
+      - DOCSRAY_LOG_LEVEL=INFO
+      - DOCSRAY_PYMUPDF_ENABLED=true
+      - DOCSRAY_CACHE_ENABLED=true
+    
+    volumes:
+      - docsray-cache:/app/cache
+      - docsray-logs:/app/logs
+      - docsray-data:/app/data
+      - ./config/production.env:/app/.env:ro
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    networks:
+      - docsray-network
+    
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Log aggregation (optional)
+  log-collector:
+    image: fluent/fluent-bit:latest
+    container_name: docsray-logs
+    restart: unless-stopped
+    
+    volumes:
+      - docsray-logs:/app/logs:ro
+      - ./config/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    
+    networks:
+      - docsray-network
+    
+    profiles:
+      - logging
+
+  # Monitoring (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: docsray-prometheus
+    restart: unless-stopped
+    
+    ports:
+      - "127.0.0.1:9090:9090"
+    
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    
+    networks:
+      - docsray-network
+    
+    profiles:
+      - monitoring
+
+networks:
+  docsray-network:
+    driver: bridge
+    name: docsray-prod-network
+
+volumes:
+  docsray-cache:
+    driver: local
+    name: docsray-prod-cache
+  docsray-logs:
+    driver: local
+    name: docsray-prod-logs
+  docsray-data:
+    driver: local
+    name: docsray-prod-data
+  prometheus-data:
+    driver: local
+    name: docsray-prometheus-data

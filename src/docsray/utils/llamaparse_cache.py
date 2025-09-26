@@ -22,9 +22,9 @@ class LlamaParseCache:
         """Initialize the LlamaParse cache.
         
         Args:
-            cache_root: Root directory for cache storage. Defaults to tests/tmp
+            cache_root: Root directory for cache storage. Defaults to ~/.docsray/cache
         """
-        self.cache_root = cache_root or Path("/workspace/docsray-mcp/tests/tmp")
+        self.cache_root = cache_root or Path.home() / ".docsray" / "cache"
         self.cache_root.mkdir(parents=True, exist_ok=True)
         logger.info(f"LlamaParse cache initialized at: {self.cache_root}")
     

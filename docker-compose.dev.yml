@@ -1,0 +1,123 @@
+# Docker Compose for Docsray MCP Server Development
+# Extended development configuration with additional services
+
+version: '3.8'
+
+services:
+  # Development server with hot reload
+  docsray-dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: docsray-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"  # HTTP server
+      - "8888:8888"  # Jupyter notebook
+      - "5678:5678"  # Debug port
+    environment:
+      - DOCSRAY_TRANSPORT=http
+      - DOCSRAY_HTTP_HOST=0.0.0.0
+      - DOCSRAY_HTTP_PORT=3000
+      - DOCSRAY_LOG_LEVEL=DEBUG
+      - DOCSRAY_PYMUPDF_ENABLED=true
+      - DOCSRAY_PYTESSERACT_ENABLED=true
+      - DOCSRAY_CACHE_ENABLED=true
+      - PYTHONPATH=/app/src
+      # Development flags
+      - DOCSRAY_DEV_MODE=true
+      - DOCSRAY_AUTO_RELOAD=true
+    volumes:
+      # Mount source for hot reload
+      - .:/app:cached
+      # Preserve node_modules and Python cache
+      - /app/node_modules
+      - docsray-dev-cache:/app/cache
+      - docsray-dev-logs:/app/logs
+      - docsray-dev-data:/app/data
+    stdin_open: true
+    tty: true
+    networks:
+      - docsray-dev-network
+    command: ["bash", "-c", "docsray start --transport http --port 3000 --verbose"]
+
+  # Jupyter notebook for interactive development
+  jupyter:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: docsray-jupyter
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=docsray-dev
+      - PYTHONPATH=/app/src
+    volumes:
+      - .:/app:cached
+      - docsray-dev-cache:/app/cache
+      - jupyter-data:/home/docsray/.jupyter
+    working_dir: /app
+    command: ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=docsray-dev"]
+    networks:
+      - docsray-dev-network
+    profiles:
+      - jupyter
+
+  # Redis for advanced caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: docsray-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - docsray-dev-network
+    profiles:
+      - redis
+
+  # Document processing test service
+  test-docs:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: docsray-test-docs
+    environment:
+      - DOCSRAY_LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app/src
+    volumes:
+      - .:/app:cached
+      - docsray-dev-cache:/app/cache
+      - ./tests/fixtures:/app/test-docs:ro
+    working_dir: /app
+    command: ["python", "-m", "pytest", "tests/", "-v", "--tb=short"]
+    networks:
+      - docsray-dev-network
+    profiles:
+      - test
+
+networks:
+  docsray-dev-network:
+    driver: bridge
+    name: docsray-dev-network
+
+volumes:
+  docsray-dev-cache:
+    driver: local
+    name: docsray-dev-cache
+  docsray-dev-logs:
+    driver: local
+    name: docsray-dev-logs
+  docsray-dev-data:
+    driver: local
+    name: docsray-dev-data
+  jupyter-data:
+    driver: local
+    name: docsray-jupyter-data
+  redis-data:
+    driver: local
+    name: docsray-redis-data

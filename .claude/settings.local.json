@@ -30,7 +30,10 @@
       "Bash(source .env)",
       "Bash(npm start)",
       "Bash(npm run build:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docling-project.github.io)",
+      "WebFetch(domain:docsray.dev)"
     ],
     "deny": []
   }

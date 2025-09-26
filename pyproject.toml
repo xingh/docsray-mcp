@@ -1,6 +1,6 @@
 [project]
 name = "docsray-mcp"
-version = "0.3.3"
+version = "0.3.4"
 description = "AI-powered document perception and analysis MCP server with intelligent provider selection"
 authors = [
     {name = "Docsray Team", email = "team@docsray.dev"}
@@ -53,7 +53,13 @@ dev = [
     "mypy>=1.0.0",
     "types-aiofiles",
 ]
-all = ["docsray-mcp[ocr,ai,dev]"]
+docker = [
+    "testcontainers>=4.0.0",
+    "requests>=2.28.0",
+    "docker>=6.0.0",
+    "pytest-docker>=2.0.0",
+]
+all = ["docsray-mcp[ocr,ai,dev,docker]"]
 
 [project.scripts]
 docsray = "docsray.cli:main"

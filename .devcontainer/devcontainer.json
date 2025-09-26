@@ -1,0 +1,119 @@
+{
+    "name": "Docsray MCP Server Development",
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    
+    "runArgs": [
+        "--name=docsray-devcontainer"
+    ],
+    
+    "forwardPorts": [3000, 3001],
+    "portsAttributes": {
+        "3000": {
+            "label": "Docsray MCP HTTP",
+            "onAutoForward": "notify"
+        },
+        "3001": {
+            "label": "Docsray Development",
+            "onAutoForward": "notify"
+        }
+    },
+    
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "charliermarsh.ruff",
+                "ms-python.mypy-type-checker",
+                "ms-python.pytest",
+                "eamodio.gitlens",
+                "github.vscode-pull-request-github",
+                "yzhang.markdown-all-in-one",
+                "davidanson.vscode-markdownlint",
+                "ms-vscode-remote.remote-containers",
+                "ms-azuretools.vscode-docker",
+                "redhat.vscode-yaml",
+                "ms-vscode.vscode-json",
+                "github.copilot",
+                "continue.continue",
+                "anthropic.claude-dev"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/opt/venv/bin/python",
+                "python.terminal.activateEnvironment": true,
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": false,
+                "python.linting.mypyEnabled": true,
+                "python.formatting.provider": "black",
+                "python.formatting.blackArgs": ["--line-length=88"],
+                "ruff.args": ["--line-length=88"],
+                "ruff.fixAll": true,
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestArgs": ["tests"],
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": true,
+                    "source.fixAll.ruff": true
+                },
+                "editor.rulers": [88],
+                "files.exclude": {
+                    "**/__pycache__": true,
+                    "**/*.pyc": true,
+                    ".pytest_cache": true,
+                    ".mypy_cache": true,
+                    ".ruff_cache": true,
+                    "htmlcov": true,
+                    ".coverage": true
+                },
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash",
+                        "args": ["-l"]
+                    }
+                }
+            }
+        }
+    },
+    
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "postStartCommand": "bash .devcontainer/post-start.sh",
+    
+    "remoteUser": "docsray",
+    "containerUser": "docsray",
+    
+    "containerEnv": {
+        "DOCSRAY_LOG_LEVEL": "DEBUG",
+        "DOCSRAY_CACHE_ENABLED": "true",
+        "DOCSRAY_PYMUPDF_ENABLED": "true",
+        "PYTHONPATH": "/app/src"
+    },
+    
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/.git,target=/app/.git,type=bind,consistency=cached"
+    ],
+    
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {
+            "ppa": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "installDirectlyFromGitHubRelease": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "moby": true,
+            "azureDnsAutoDetection": true,
+            "installDockerBuildx": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "nodeGypDependencies": true,
+            "version": "lts"
+        }
+    }
+}

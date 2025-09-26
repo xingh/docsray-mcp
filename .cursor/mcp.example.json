@@ -48,7 +48,7 @@
           "DOCSRAY_LLAMAPARSE_ENABLED": "true",
           "DOCSRAY_MISTRAL_API_KEY": "your-mistral-api-key-here",
           "DOCSRAY_LLAMAPARSE_API_KEY": "your-llamaparse-api-key-here",
-          "DOCSRAY_LLAMAPARSE_MODE": "balanced",
+          "DOCSRAY_LLAMAPARSE_MODE": "fast",
           "DOCSRAY_CACHE_ENABLED": "true"
         }
       },

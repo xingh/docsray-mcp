@@ -5,6 +5,16 @@ All notable changes to Docsray MCP will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2025-08-08
+
+### 🐛 Bug Fix
+
+#### Fixed
+- **Cache Directory**: Fixed hardcoded cache path from `/workspace/docsray-mcp/tests/tmp` to standard user directory `~/.docsray/cache`
+  - LlamaParse cache now uses proper user home directory location
+  - Follows standard conventions for application data storage
+  - Prevents permission issues and ensures cache persistence across sessions
+
 ## [0.3.3] - 2025-08-06
 
 ### 🔗 Updated URLs
