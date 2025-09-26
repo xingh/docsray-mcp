@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 from .config import DocsrayConfig
 from .providers.registry import ProviderRegistry
-from .tools import extract, map, peek, seek, xray
+from .tools import extract, fetch, map, peek, search, seek, xray
 from .utils.cache import DocumentCache
 from .utils.logging import setup_logging
 
@@ -153,7 +153,31 @@ class DocsrayServer:
                     "auto_selection": "Analyze document.pdf (system chooses best provider)"
                 }
             }
-        
+
+        # Search tool
+        @self.mcp.tool(
+            name="docsray_search",
+            description="Search for documents in the filesystem using intelligent coarse-to-fine search methodology inspired by MIMIC.DocsRay. Finds documents by content matching and filename patterns."
+        )
+        async def tool_search(
+            query: str = Field(..., description="Search query for finding documents"),
+            searchPath: str = Field("./", description="Base path to search within"),
+            searchStrategy: str = Field("coarse-to-fine", description="Search strategy (coarse-to-fine, semantic, keyword, hybrid)"),
+            fileTypes: List[str] = Field(["pdf", "docx", "md", "txt"], description="File types to include in search"),
+            maxResults: int = Field(10, description="Maximum number of results to return"),
+            provider: str = Field("auto", description="Provider selection (auto, mimic-docsray, filesystem)")
+        ) -> Dict[str, Any]:
+            return await search.handle_search(
+                query=query,
+                search_path=searchPath,
+                search_strategy=searchStrategy,
+                file_types=fileTypes,
+                max_results=maxResults,
+                provider=provider,
+                registry=self.registry,
+                cache=self.cache
+            )
+
         # Seek tool
         @self.mcp.tool(
             name="docsray_seek",
@@ -264,6 +288,28 @@ class DocsrayServer:
                 cache=self.cache
             )
 
+        # Fetch tool
+        @self.mcp.tool(
+            name="docsray_fetch",
+            description="Fetch documents from web URLs or filesystem paths. Unified document retrieval with caching, progress reporting, and multiple return formats"
+        )
+        async def tool_fetch(
+            source: str = Field(..., description="URL (https://) or filesystem path to fetch"),
+            fetch_options: Optional[Dict[str, Any]] = Field(None, description="HTTP headers, timeout, followRedirects settings"),
+            cache_strategy: str = Field("use-cache", description="Caching strategy (use-cache, bypass-cache, refresh-cache)"),
+            return_format: str = Field("raw", description="Format of returned document (raw, processed, metadata-only)"),
+            provider: str = Field("auto", description="Provider selection for processed format")
+        ) -> Dict[str, Any]:
+            return await fetch.handle_fetch(
+                source=source,
+                registry=self.registry,
+                cache=self.cache,
+                fetch_options=fetch_options,
+                cache_strategy=cache_strategy,
+                return_format=return_format,
+                provider=provider
+            )
+
     def _initialize_providers(self) -> None:
         """Initialize enabled providers."""
         # PyMuPDF4LLM provider (always enabled in phase 1)
@@ -290,6 +336,30 @@ class DocsrayServer:
                 logger.info("LlamaParse provider registered (will initialize on first use)")
             except Exception as e:
                 logger.error(f"Failed to register LlamaParse provider: {e}")
+
+        # MIMIC.DocsRay provider
+        if self.config.providers.mimic_docsray.enabled:
+            try:
+                from .providers.mimic_docsray import MimicDocsrayProvider
+                provider = MimicDocsrayProvider()
+                # Store config for lazy initialization
+                provider.config = self.config.providers.mimic_docsray
+                self.registry.register(provider)
+                logger.info("MIMIC.DocsRay provider registered (will initialize on first use)")
+            except Exception as e:
+                logger.error(f"Failed to register MIMIC.DocsRay provider: {e}")
+
+        # IBM.Docling provider
+        if self.config.providers.ibm_docling.enabled:
+            try:
+                from .providers.ibm_docling import IBMDoclingProvider
+                provider = IBMDoclingProvider()
+                # Store config for lazy initialization
+                provider.config = self.config.providers.ibm_docling
+                self.registry.register(provider)
+                logger.info("IBM.Docling provider registered (will initialize on first use)")
+            except Exception as e:
+                logger.error(f"Failed to register IBM.Docling provider: {e}")
 
         # Log available providers
         providers = self.registry.list_providers()

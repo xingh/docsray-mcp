@@ -73,6 +73,16 @@ class ExtractResult(BaseModel):
     statistics: Optional[Dict[str, Any]] = None
 
 
+class SearchResult(BaseModel):
+    """Result from search operation."""
+
+    results: List[Dict[str, Any]]
+    total_found: int
+    search_strategy: str
+    query: str
+    statistics: Optional[Dict[str, Any]] = None
+
+
 class DocumentProvider(ABC):
     """Abstract base class for document providers."""
 
@@ -120,6 +130,10 @@ class DocumentProvider(ABC):
     async def extract(self, document: Document, options: Dict[str, Any]) -> ExtractResult:
         """Extract content from document."""
         pass
+
+    async def search(self, query: str, search_path: str, options: Dict[str, Any]) -> SearchResult:
+        """Search for documents in filesystem. Optional method - not all providers need to implement."""
+        raise NotImplementedError(f"Provider {self.get_name()} does not support search operations")
 
     @abstractmethod
     async def initialize(self, config: Any) -> None:

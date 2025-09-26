@@ -156,14 +156,45 @@ class ProviderRegistry:
         if operation == "xray":
             if caps.features.get("customInstructions", False):
                 score += 5.0
+            if caps.features.get("semanticSearch", False):
+                score += 7.0  # MIMIC.DocsRay semantic search bonus
+            if caps.features.get("multimodalAnalysis", False):
+                score += 6.0  # Multimodal analysis bonus
+            if caps.features.get("vlm", False):
+                score += 8.0  # IBM.Docling VLM bonus for visual understanding
+            if caps.features.get("layoutUnderstanding", False):
+                score += 7.0  # IBM.Docling advanced layout understanding
+            if caps.features.get("entityExtraction", False):
+                score += 6.0  # IBM.Docling entity extraction bonus
         elif operation == "extract":
             if document.has_scanned_content and caps.features.get("ocr", False):
                 score += 8.0
+            if caps.features.get("hybridOCR", False):
+                score += 4.0  # Hybrid OCR bonus for MIMIC.DocsRay
             if caps.features.get("tables", False):
                 score += 2.0
+            if caps.features.get("structuredExtraction", False):
+                score += 7.0  # IBM.Docling structured extraction bonus
+            if caps.features.get("readingOrder", False):
+                score += 5.0  # IBM.Docling reading order preservation
         elif operation == "map":
             if caps.features.get("streaming", False):
                 score += 3.0
+            if caps.features.get("documentChunking", False):
+                score += 5.0  # Document chunking bonus for MIMIC.DocsRay
+            if caps.features.get("semanticRanking", False):
+                score += 4.0  # Semantic ranking bonus
+            if caps.features.get("layoutUnderstanding", False):
+                score += 8.0  # IBM.Docling layout understanding for mapping
+            if caps.features.get("documentClassification", False):
+                score += 6.0  # IBM.Docling document classification for better mapping
+        elif operation == "search":
+            if caps.features.get("coarseToFineSearch", False):
+                score += 8.0  # High bonus for coarse-to-fine search
+            if caps.features.get("semanticSearch", False):
+                score += 6.0  # Semantic search bonus
+            if caps.features.get("ragSupport", False):
+                score += 5.0  # RAG support bonus
 
         # Performance scoring for large files
         if document.size and document.size > 10 * 1024 * 1024:  # 10MB

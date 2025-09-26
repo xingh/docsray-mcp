@@ -3,7 +3,7 @@
 import pytest
 
 from docsray.providers.base import Document
-from docsray.tools import extract, map, peek, seek, xray
+from docsray.tools import extract, fetch, map, peek, seek, xray
 
 
 class TestToolIntegration:
@@ -82,7 +82,7 @@ class TestToolIntegration:
     @pytest.mark.asyncio
     async def test_xray_tool(self, registry, cache, mock_provider, sample_document):
         registry.register(mock_provider)
-        
+
         result = await xray.handle_xray(
             document_url=sample_document.url,
             analysis_type=["entities", "key-points"],
@@ -91,9 +91,27 @@ class TestToolIntegration:
             registry=registry,
             cache=cache
         )
-        
+
         assert "analysis" in result
         assert result["provider"] == "mock"
+
+    @pytest.mark.asyncio
+    async def test_fetch_tool(self, registry, cache, mock_provider, sample_document):
+        registry.register(mock_provider)
+
+        result = await fetch.handle_fetch(
+            source=sample_document.url,
+            registry=registry,
+            cache=cache,
+            return_format="metadata-only"
+        )
+
+        # For file paths, expect path-related fields
+        if not sample_document.url.startswith("http"):
+            assert "path" in result or "error" in result
+        # Test parameter validation
+        assert result["cacheStrategy"] == "use-cache"
+        assert result["returnFormat"] == "metadata-only"
     
     @pytest.mark.asyncio
     async def test_tool_caching(self, registry, cache, mock_provider, sample_document):
