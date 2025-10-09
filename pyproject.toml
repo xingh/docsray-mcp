@@ -55,6 +55,7 @@ dev = [
     "ruff>=0.5.0",
     "mypy>=1.0.0",
     "types-aiofiles",
+    "mcp-use>=0.1.0",
 ]
 docker = [
     "testcontainers>=4.0.0",

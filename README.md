@@ -13,13 +13,15 @@
 
 ## ✨ Features
 
-### 🎯 Five Powerful Tools
+### 🎯 Seven Powerful Tools
 
 1. **`docsray_peek`** - Quick document overview with format detection and provider capabilities
 2. **`docsray_map`** - Generate comprehensive document structure maps with caching
 3. **`docsray_xray`** - AI-powered deep analysis extracting entities, relationships, and insights
 4. **`docsray_extract`** - Extract content in multiple formats (markdown, text, JSON, tables)
 5. **`docsray_seek`** - Navigate to specific pages, sections, or search for content
+6. **`docsray_fetch`** - Unified document retrieval from web URLs or filesystem with caching
+7. **`docsray_search`** - Intelligent filesystem search using coarse-to-fine methodology
 
 ### 🔌 Multi-Provider Architecture
 
@@ -34,6 +36,22 @@
   - Custom analysis instructions
   - Comprehensive caching in .docsray directories
   - Rich format preservation (markdown, images, tables)
+
+- **IBM.Docling** - Advanced document understanding (✅ Implemented)
+  - Best-in-class layout understanding
+  - Visual Language Model integration
+  - Advanced table and figure detection
+  - Multi-format support (PDF, DOCX, HTML, images)
+  - Reading order preservation
+  - Structured extraction capabilities
+
+- **MIMIC.DocsRay** - Coarse-to-fine search methodology (✅ Implemented)
+  - Semantic search with RAG capabilities
+  - Hybrid OCR engine (AI + traditional)
+  - Document chunking and embedding
+  - Multimodal analysis
+  - Filesystem search optimization
+  - Context-aware analysis
 
 - **PyTesseract** - OCR for scanned documents (🔄 Planned)
 - **Mistral OCR** - AI-powered OCR and analysis (🔄 Planned)
@@ -185,11 +203,27 @@ Extract pages 10-20 from ./report.pdf as markdown
 Analyze https://arxiv.org/pdf/2301.00234.pdf for methodology and key findings
 ```
 
+### Fetch Documents from Web or Filesystem
+
+```
+Fetch https://example.com/document.pdf with processed format
+Fetch ./local/document.pdf with metadata-only format
+```
+
+### Search Documents Intelligently
+
+```
+Search for "machine learning" in ./research/ with coarse-to-fine strategy
+Find documents about "contracts" in /legal/ using semantic search
+```
+
 ### Compare Providers
 
 ```
 Extract text from document.pdf with provider pymupdf4llm (fast)
 Xray document.pdf with provider llama-parse (AI analysis)
+Analyze document.pdf with provider ibm-docling (advanced layout)
+Search documents with provider mimic-docsray (semantic)
 ```
 
 ## 🛠️ Advanced Configuration
@@ -201,6 +235,25 @@ Xray document.pdf with provider llama-parse (AI analysis)
 DOCSRAY_PYMUPDF4LLM_ENABLED=true  # Always true by default
 DOCSRAY_LLAMAPARSE_ENABLED=true
 LLAMAPARSE_API_KEY=llx-your-key
+
+# IBM.Docling Provider
+DOCSRAY_IBM_DOCLING_ENABLED=false
+DOCSRAY_IBM_DOCLING_USE_VLM=true
+DOCSRAY_IBM_DOCLING_USE_ASR=false
+DOCSRAY_IBM_DOCLING_OCR_ENABLED=true
+DOCSRAY_IBM_DOCLING_TABLE_DETECTION=true
+DOCSRAY_IBM_DOCLING_FIGURE_DETECTION=true
+DOCSRAY_IBM_DOCLING_DEVICE=cpu  # or cuda
+
+# MIMIC.DocsRay Provider
+DOCSRAY_MIMIC_ENABLED=false
+DOCSRAY_MIMIC_RAG_ENABLED=true
+DOCSRAY_MIMIC_SEMANTIC_RANKING=true
+DOCSRAY_MIMIC_MULTIMODAL=true
+DOCSRAY_MIMIC_HYBRID_OCR=true
+DOCSRAY_MIMIC_COARSE_TO_FINE=true
+DOCSRAY_MIMIC_CHUNK_SIZE=1000
+DOCSRAY_MIMIC_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 
 # Performance Tuning
 DOCSRAY_CACHE_ENABLED=true
@@ -231,6 +284,31 @@ DOCSRAY_LOG_LEVEL=INFO
 - ✅ Layout preservation
 - ✅ Relationship mapping
 - ✅ Result caching
+
+#### IBM.Docling (When Enabled)
+- ✅ Advanced layout understanding
+- ✅ Visual Language Model integration
+- ✅ Best-in-class table detection
+- ✅ Figure classification and understanding
+- ✅ Multi-format support (PDF, DOCX, HTML, images)
+- ✅ Reading order preservation
+- ✅ Structured information extraction
+- ✅ Document classification
+- ✅ OCR with layout understanding
+- ✅ Form field detection
+- ✅ Multi-language support
+
+#### MIMIC.DocsRay (When Enabled)
+- ✅ Coarse-to-fine search methodology
+- ✅ Semantic search with RAG
+- ✅ Document chunking and embedding
+- ✅ Hybrid OCR (AI + traditional)
+- ✅ Multimodal analysis
+- ✅ Context-aware analysis
+- ✅ Filesystem search optimization
+- ✅ Semantic ranking
+- ✅ Entity extraction
+- ✅ Relationship mapping
 
 ## 🧪 Testing
 
@@ -314,6 +392,35 @@ Navigate to specific document locations.
   "target": {"page": 5},  # or {"section": "Introduction"} or {"query": "search text"}
   "extract_content": true,
   "provider": "auto"
+}
+```
+
+### Tool: docsray_fetch
+
+Unified document retrieval from web URLs or filesystem.
+
+```python
+{
+  "source": "https://example.com/doc.pdf",  # or "./local/path.pdf"
+  "fetch_options": {"timeout": 30000, "headers": {}},
+  "cache_strategy": "use-cache",  # use-cache | bypass-cache | refresh-cache
+  "return_format": "processed",  # raw | processed | metadata-only
+  "provider": "auto"
+}
+```
+
+### Tool: docsray_search
+
+Intelligent filesystem search with coarse-to-fine methodology.
+
+```python
+{
+  "query": "machine learning algorithms",
+  "searchPath": "./research/",
+  "searchStrategy": "coarse-to-fine",  # coarse-to-fine | semantic | keyword | hybrid
+  "fileTypes": ["pdf", "docx", "md"],
+  "maxResults": 10,
+  "provider": "mimic-docsray"
 }
 ```
 

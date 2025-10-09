@@ -71,21 +71,79 @@ class DocsrayServer:
             for name in self.registry.list_providers():
                 provider = self.registry.get_provider(name)
                 if provider:
+                    caps = provider.get_capabilities() if hasattr(provider, 'get_capabilities') else None
                     providers.append({
                         "name": name,
                         "status": "active" if provider._initialized else "registered",
-                        "capabilities": provider.get_capabilities().__dict__ if hasattr(provider, 'get_capabilities') else {}
+                        "supported_formats": caps.formats if caps else [],
+                        "features": caps.features if caps else {},
+                        "performance": caps.performance if caps else {}
                     })
             
             return {
                 "name": "docsray",
                 "version": "1.0.0",
-                "description": "AI-powered document processing MCP server",
+                "description": "AI-powered document processing MCP server with advanced capabilities",
+                "tools": [
+                    {
+                        "name": "docsray_peek",
+                        "description": "Quick document overview with format detection and provider capabilities",
+                        "input_types": ["local_files", "urls"]
+                    },
+                    {
+                        "name": "docsray_map", 
+                        "description": "Generate comprehensive document structure maps with caching",
+                        "features": ["hierarchy_detection", "resource_extraction", "cross_references"]
+                    },
+                    {
+                        "name": "docsray_xray",
+                        "description": "AI-powered deep analysis extracting entities, relationships, and insights",
+                        "analysis_types": ["entities", "key_points", "relationships", "sentiment", "topics", "custom"]
+                    },
+                    {
+                        "name": "docsray_extract",
+                        "description": "Extract content in multiple formats (markdown, text, JSON, tables)",
+                        "output_formats": ["markdown", "text", "json", "structured"],
+                        "extraction_targets": ["text", "tables", "images", "metadata"]
+                    },
+                    {
+                        "name": "docsray_seek",
+                        "description": "Navigate to specific pages, sections, or search for content",
+                        "navigation_types": ["page", "section", "query", "semantic_search"]
+                    },
+                    {
+                        "name": "docsray_fetch",
+                        "description": "Unified document retrieval from web URLs or filesystem with caching",
+                        "source_types": ["https_urls", "filesystem_paths"],
+                        "return_formats": ["raw", "processed", "metadata-only"],
+                        "features": ["progress_reporting", "caching", "multiple_encodings"]
+                    },
+                    {
+                        "name": "docsray_search",
+                        "description": "Intelligent filesystem search using coarse-to-fine methodology",
+                        "search_strategies": ["coarse-to-fine", "semantic", "keyword", "hybrid"],
+                        "features": ["semantic_ranking", "content_analysis", "relevance_scoring"]
+                    }
+                ],
                 "capabilities": {
-                    "document_formats": ["pdf", "docx", "doc", "txt", "md"],
-                    "input_sources": ["local_files", "urls"],
-                    "extraction_formats": ["markdown", "text", "json"],
-                    "analysis_types": ["entities", "key_points", "structure", "relationships"],
+                    "document_formats": [
+                        "pdf", "docx", "doc", "pptx", "ppt", "xlsx", "xls",
+                        "txt", "md", "html", "xml", "json", "csv", "rtf",
+                        "png", "jpg", "jpeg", "tiff", "bmp", "gif", "webp",
+                        "odt", "ods", "odp", "epub", "mobi"
+                    ],
+                    "input_sources": ["local_files", "web_urls", "filesystem_search"],
+                    "extraction_formats": ["markdown", "text", "json", "structured", "DoclingDocument"],
+                    "analysis_types": [
+                        "entities", "key_points", "structure", "relationships", 
+                        "sentiment", "topics", "custom_instructions", "multimodal"
+                    ],
+                    "advanced_features": [
+                        "semantic_search", "rag_retrieval", "hybrid_ocr", 
+                        "layout_understanding", "reading_order_preservation",
+                        "coarse_to_fine_search", "document_chunking",
+                        "vector_embeddings", "multimodal_analysis"
+                    ],
                     "providers": providers
                 },
                 "usage_examples": {
@@ -93,12 +151,18 @@ class DocsrayServer:
                     "entity_extraction": "Xray contract.pdf and extract all parties and dates",
                     "structure_mapping": "Map the complete hierarchy of manual.pdf",
                     "content_extraction": "Extract pages 5-10 from report.pdf as markdown",
-                    "url_processing": "Analyze https://example.com/document.pdf"
+                    "url_processing": "Analyze https://example.com/document.pdf",
+                    "document_fetch": "Fetch https://example.com/doc.pdf with processed format",
+                    "semantic_search": "Search for 'machine learning' in ./research/ with semantic strategy",
+                    "advanced_analysis": "Xray contract.pdf with provider ibm-docling for advanced layout understanding"
                 },
                 "best_practices": [
                     "Start with peek to understand document structure",
-                    "Use xray for AI-powered analysis",
+                    "Use xray for AI-powered analysis with custom instructions",
                     "Use extract for fast content retrieval",
+                    "Use fetch for unified document retrieval with caching",
+                    "Use search for intelligent filesystem discovery",
+                    "Choose providers based on your needs: pymupdf4llm (fast), llama-parse (AI), ibm-docling (layout), mimic-docsray (search)",
                     "Results are cached for fast subsequent access"
                 ]
             }
@@ -127,6 +191,16 @@ class DocsrayServer:
                         "Map the structure of ./manual.pdf",
                         "Show the hierarchy of specification.pdf",
                         "Create a navigation map for textbook.pdf"
+                    ],
+                    "fetch": [
+                        "Fetch https://example.com/document.pdf with processed format",
+                        "Download ./local/document.pdf with metadata-only format",
+                        "Retrieve https://arxiv.org/pdf/paper.pdf with caching"
+                    ],
+                    "search": [
+                        "Search for 'machine learning' in ./research/ using coarse-to-fine",
+                        "Find documents about 'contracts' in /legal/ with semantic search",
+                        "Locate files containing 'API documentation' in ./docs/ folder"
                     ]
                 },
                 "advanced_analysis": {
@@ -139,18 +213,58 @@ class DocsrayServer:
                         "Analyze lease.pdf and extract rent, term, and obligations",
                         "Review 10-K.pdf for risk factors and financial metrics",
                         "Extract methodology and conclusions from research.pdf"
+                    ],
+                    "multimodal": [
+                        "Xray presentation.pptx with provider ibm-docling for visual elements",
+                        "Analyze infographic.pdf with multimodal analysis enabled",
+                        "Extract text from scanned document with hybrid OCR"
+                    ],
+                    "semantic": [
+                        "Search ./documents/ for content similar to 'deep learning algorithms'",
+                        "Find related documents using semantic similarity",
+                        "Perform RAG-enabled search across document collection"
                     ]
                 },
                 "by_document_type": {
                     "legal": "Xray contract.pdf to extract parties, terms, obligations, and deadlines",
                     "financial": "Analyze report.pdf for revenue, expenses, and projections",
                     "technical": "Map api_docs.pdf and extract all endpoints and parameters",
-                    "academic": "Extract authors, methodology, and findings from paper.pdf"
+                    "academic": "Extract authors, methodology, and findings from paper.pdf",
+                    "presentations": "Extract slides and speaker notes from presentation.pptx",
+                    "spreadsheets": "Analyze financial_data.xlsx for trends and key metrics",
+                    "forms": "Extract form fields and values from application.pdf"
                 },
                 "provider_specific": {
                     "fast_extraction": "Extract text from document.pdf with provider pymupdf4llm",
                     "ai_analysis": "Xray document.pdf with provider llama-parse",
+                    "layout_understanding": "Analyze complex_layout.pdf with provider ibm-docling",
+                    "semantic_search": "Search documents with provider mimic-docsray",
                     "auto_selection": "Analyze document.pdf (system chooses best provider)"
+                },
+                "workflow_examples": {
+                    "document_discovery": [
+                        "1. Search for relevant documents: Search for 'quarterly reports' in ./finance/",
+                        "2. Get overview: Peek at found documents to understand structure",
+                        "3. Deep analysis: Xray key documents for entities and insights"
+                    ],
+                    "content_processing": [
+                        "1. Fetch document: Fetch https://example.com/report.pdf",
+                        "2. Map structure: Map the document hierarchy and sections",
+                        "3. Extract content: Extract specific pages or sections as needed"
+                    ],
+                    "comparative_analysis": [
+                        "1. Search for similar documents across providers",
+                        "2. Extract key information using different analysis strategies",
+                        "3. Compare results and choose optimal approach"
+                    ]
+                },
+                "advanced_features": {
+                    "chunking_and_embedding": "Process large_document.pdf with chunking for semantic search",
+                    "reading_order": "Extract content from complex_layout.pdf preserving reading order",
+                    "table_extraction": "Extract structured tables from financial_report.pdf",
+                    "figure_analysis": "Analyze charts and diagrams in research_paper.pdf",
+                    "hybrid_ocr": "Process scanned_document.pdf with AI and traditional OCR",
+                    "custom_instructions": "Analyze contract.pdf focusing on termination clauses and penalties"
                 }
             }
 

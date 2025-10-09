@@ -3,7 +3,7 @@
 import pytest
 
 from docsray.providers.base import Document
-from docsray.tools import extract, fetch, map, peek, seek, xray
+from docsray.tools import extract, fetch, map, peek, search, seek, xray
 
 
 class TestToolIntegration:
@@ -112,6 +112,43 @@ class TestToolIntegration:
         # Test parameter validation
         assert result["cacheStrategy"] == "use-cache"
         assert result["returnFormat"] == "metadata-only"
+
+    @pytest.mark.asyncio
+    async def test_search_tool(self, registry, cache, mock_provider, sample_document):
+        registry.register(mock_provider)
+        import tempfile
+        import shutil
+        import os
+
+        # Create temporary directory with test document
+        temp_dir = tempfile.mkdtemp()
+        try:
+            # Copy test document to temp directory
+            dest_path = os.path.join(temp_dir, "test_document.txt")
+            if os.path.exists(sample_document.url):
+                shutil.copy2(sample_document.url, dest_path)
+            else:
+                # Create a simple test file
+                with open(dest_path, 'w') as f:
+                    f.write("Sample document content for testing search functionality.")
+            
+            result = await search.handle_search(
+                query="sample document",
+                search_path=temp_dir,
+                search_strategy="keyword",
+                file_types=["txt"],
+                max_results=5,
+                provider="filesystem",
+                registry=registry,
+                cache=cache
+            )
+            
+            assert "results" in result
+            assert "total_found" in result
+            assert "search_strategy" in result
+            
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
     
     @pytest.mark.asyncio
     async def test_tool_caching(self, registry, cache, mock_provider, sample_document):

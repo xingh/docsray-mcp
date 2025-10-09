@@ -62,6 +62,20 @@ DOCSRAY_PYMUPDF_ENABLED=true
 DOCSRAY_PYTESSERACT_ENABLED=false
 DOCSRAY_MISTRAL_ENABLED=false
 DOCSRAY_LLAMAPARSE_ENABLED=false
+DOCSRAY_IBM_DOCLING_ENABLED=false
+DOCSRAY_MIMIC_ENABLED=false
+
+# IBM.Docling configuration
+DOCSRAY_IBM_DOCLING_USE_VLM=true
+DOCSRAY_IBM_DOCLING_OCR_ENABLED=true
+DOCSRAY_IBM_DOCLING_TABLE_DETECTION=true
+DOCSRAY_IBM_DOCLING_FIGURE_DETECTION=true
+
+# MIMIC.DocsRay configuration
+DOCSRAY_MIMIC_RAG_ENABLED=true
+DOCSRAY_MIMIC_SEMANTIC_RANKING=true
+DOCSRAY_MIMIC_COARSE_TO_FINE=true
+DOCSRAY_MIMIC_HYBRID_OCR=true
 
 # API keys (if using AI providers)
 DOCSRAY_MISTRAL_API_KEY=your-key
@@ -149,6 +163,28 @@ const result = await use_mcp_tool("docsray", "docsray_seek", {
 const result = await use_mcp_tool("docsray", "docsray_peek", {
   document_url: "/path/to/document.pdf",
   depth: "structure"
+});
+```
+
+### Fetch Documents
+
+```typescript
+const result = await use_mcp_tool("docsray", "docsray_fetch", {
+  source: "https://example.com/document.pdf",
+  return_format: "processed",
+  cache_strategy: "use-cache"
+});
+```
+
+### Search Documents
+
+```typescript
+const result = await use_mcp_tool("docsray", "docsray_search", {
+  query: "machine learning",
+  searchPath: "./research/",
+  searchStrategy: "coarse-to-fine",
+  fileTypes: ["pdf", "docx"],
+  maxResults: 10
 });
 ```
 
