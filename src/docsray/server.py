@@ -448,6 +448,11 @@ class DocsrayServer:
                 provider.config = self.config.providers.llama_parse
                 self.registry.register(provider)
                 logger.info("LlamaParse provider registered (will initialize on first use)")
+            except ModuleNotFoundError as e:
+                logger.error(
+                    "Failed to register LlamaParse provider: %s. Install optional deps with 'pip install \"docsray-mcp[ai]\"' or 'pip install llama-parse'.",
+                    e
+                )
             except Exception as e:
                 logger.error(f"Failed to register LlamaParse provider: {e}")
 
@@ -472,6 +477,11 @@ class DocsrayServer:
                 provider.config = self.config.providers.ibm_docling
                 self.registry.register(provider)
                 logger.info("IBM.Docling provider registered (will initialize on first use)")
+            except ModuleNotFoundError as e:
+                logger.error(
+                    "Failed to register IBM.Docling provider: %s. Install with 'pip install \"docsray-mcp[ai]\"' or 'pip install docling'.",
+                    e
+                )
             except Exception as e:
                 logger.error(f"Failed to register IBM.Docling provider: {e}")
 

@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "docsray": {
+      "command": "python",
+      "args": ["-m", "docsray.cli", "start"],
+      "env": {
+        "PYTHONPATH": "${workspaceRoot}/src",
+        "DOCSRAY_LOG_LEVEL": "DEBUG",
+        "DOCSRAY_CACHE_ENABLED": "true",
+        "DOCSRAY_PYMUPDF_ENABLED": "true",
+        "DOCSRAY_LLAMAPARSE_ENABLED": "false",
+        "DOCSRAY_IBM_DOCLING_ENABLED": "false",
+        "DOCSRAY_MIMIC_ENABLED": "false"
+      },
+      "workingDirectory": "${workspaceRoot}"
+    }
+  }
+}

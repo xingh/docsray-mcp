@@ -1,29 +1,10 @@
-"""Configuration for MCP integration tests."""
+"""Configuration for official mcp-use CLI integration tests."""
 
 import os
-import tempfile
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict
 
 import pytest
-
-
-@pytest.fixture
-def mcp_config() -> Dict[str, Any]:
-    """Configuration for MCP server testing."""
-    return {
-        "command": "docsray",
-        "args": ["start", "--transport", "stdio", "--verbose"],
-        "env": {
-            "DOCSRAY_LOG_LEVEL": "DEBUG",
-            "DOCSRAY_CACHE_ENABLED": "true",
-            "DOCSRAY_PYMUPDF_ENABLED": "true",
-            "DOCSRAY_CACHE_DIR": str(Path(tempfile.gettempdir()) / "docsray_test_cache"),
-            "PYTHONPATH": str(Path(__file__).parent.parent.parent / "src"),
-        },
-        "timeout": 30,
-        "startup_timeout": 10,
-    }
 
 
 @pytest.fixture

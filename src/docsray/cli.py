@@ -191,6 +191,8 @@ def list_providers():
         ("ocrmypdf", config.providers.ocrmypdf.enabled, "Advanced OCR processing"),
         ("mistral-ocr", config.providers.mistral_ocr.enabled, "AI-powered OCR and analysis"),
         ("llama-parse", config.providers.llama_parse.enabled, "Advanced document parsing"),
+        ("mimic-docsray", config.providers.mimic_docsray.enabled, "Semantic search, RAG, hybrid OCR, multimodal"),
+        ("ibm-docling", config.providers.ibm_docling.enabled, "Advanced layout understanding, VLM, tables, entities"),
     ]
 
     for name, enabled, description in providers:

@@ -1,4 +1,4 @@
-"""Configuration for MCP-Use local testing."""
+"""Configuration for official mcp-use CLI local testing."""
 
 import os
 from pathlib import Path

@@ -1,15 +1,14 @@
-"""IBM.Docling provider implementation for advanced document understanding."""
+"""IBM.Docling provider implementation for advanced document understanding.
+
+This provider lazily imports heavy dependencies so it can be registered even when
+optional packages aren't installed. Actual initialization happens on first use.
+"""
 
 import hashlib
 import logging
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-
-from docling.datamodel.base_models import InputFormat
-from docling.datamodel.document import DoclingDocument
-from docling.document_converter import DocumentConverter
-from docling.datamodel.pipeline_options import PdfPipelineOptions
+from typing import Any, Dict, List, Optional
 
 from ..config import IBMDoclingConfig
 from ..utils.documents import download_document, get_document_format, get_local_document, is_url
@@ -33,7 +32,8 @@ class IBMDoclingProvider(DocumentProvider):
     def __init__(self):
         self.config: Optional[IBMDoclingConfig] = None
         self._initialized = False
-        self.converter: Optional[DocumentConverter] = None
+        # Converter will be created during initialize() to avoid import-time errors
+        self.converter: Optional[Any] = None
 
     def get_name(self) -> str:
         return "ibm-docling"
@@ -75,6 +75,13 @@ class IBMDoclingProvider(DocumentProvider):
 
     async def can_process(self, document: Document) -> bool:
         """Check if provider can process the document."""
+        # Lazy initialize on first capability check
+        if not self._initialized and self.config:
+            try:
+                await self.initialize(self.config)
+            except Exception:
+                # Initialization failed; cannot process
+                return False
         if not self._initialized:
             return False
 
@@ -444,7 +451,12 @@ class IBMDoclingProvider(DocumentProvider):
 
         try:
             # Configure pipeline options for specific extraction needs
-            pipeline_options = PdfPipelineOptions()
+            try:
+                from docling.datamodel.pipeline_options import PdfPipelineOptions
+                pipeline_options = PdfPipelineOptions()
+            except Exception:
+                # If pipeline options aren't available, proceed with defaults
+                pipeline_options = None
 
             # Enable specific extractors based on targets
             if "tables" in extraction_targets:
@@ -453,7 +465,10 @@ class IBMDoclingProvider(DocumentProvider):
                 pipeline_options.do_picture = True
 
             # Convert document
-            docling_doc = self.converter.convert(str(doc_path), pipeline_options=pipeline_options)
+            if pipeline_options is not None:
+                docling_doc = self.converter.convert(str(doc_path), pipeline_options=pipeline_options)
+            else:
+                docling_doc = self.converter.convert(str(doc_path))
 
             # Extract content based on format
             content = None
@@ -553,9 +568,12 @@ class IBMDoclingProvider(DocumentProvider):
         self.config = config
 
         try:
-            # Initialize DocumentConverter with options
-            converter_options = {}
+            # Import heavy deps lazily to avoid import-time failures when optional
+            # packages aren't installed
+            from docling.document_converter import DocumentConverter
 
+            # Initialize DocumentConverter with options
+            converter_options: Dict[str, Any] = {}
             if config.device:
                 converter_options["device"] = config.device
 
