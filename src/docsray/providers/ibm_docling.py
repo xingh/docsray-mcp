@@ -105,7 +105,8 @@ class IBMDoclingProvider(DocumentProvider):
 
         try:
             # Convert document to get metadata and structure
-            docling_doc = self.converter.convert(str(doc_path))
+            result = self.converter.convert(str(doc_path))
+            docling_doc = result.document
 
             # Extract comprehensive metadata
             metadata = {
@@ -233,7 +234,8 @@ class IBMDoclingProvider(DocumentProvider):
 
         try:
             # Convert document with full structure analysis
-            docling_doc = self.converter.convert(str(doc_path))
+            result = self.converter.convert(str(doc_path))
+            docling_doc = result.document
 
             # Build hierarchical document map
             document_map = {
@@ -342,7 +344,8 @@ class IBMDoclingProvider(DocumentProvider):
         doc_path = await self._ensure_local_document(document)
 
         try:
-            docling_doc = self.converter.convert(str(doc_path))
+            result = self.converter.convert(str(doc_path))
+            docling_doc = result.document
 
             # Determine target location
             target_content = ""
@@ -400,7 +403,8 @@ class IBMDoclingProvider(DocumentProvider):
         custom_instructions = options.get("custom_instructions", "")
 
         try:
-            docling_doc = self.converter.convert(str(doc_path))
+            result = self.converter.convert(str(doc_path))
+            docling_doc = result.document
 
             analysis = {
                 "document_classification": self._classify_document(docling_doc),
@@ -451,24 +455,31 @@ class IBMDoclingProvider(DocumentProvider):
 
         try:
             # Configure pipeline options for specific extraction needs
-            try:
-                from docling.datamodel.pipeline_options import PdfPipelineOptions
-                pipeline_options = PdfPipelineOptions()
-            except Exception:
-                # If pipeline options aren't available, proceed with defaults
-                pipeline_options = None
+            from docling.datamodel.pipeline_options import PdfPipelineOptions
+            from docling.document_converter import PdfFormatOption, DocumentConverter
+            from docling.datamodel.base_models import InputFormat
+
+            # Create pipeline options based on extraction targets
+            pipeline_options = PdfPipelineOptions()
 
             # Enable specific extractors based on targets
             if "tables" in extraction_targets:
                 pipeline_options.do_table_structure = True
             if "images" in extraction_targets:
-                pipeline_options.do_picture = True
+                pipeline_options.do_picture_classification = True
+                pipeline_options.generate_picture_images = True
 
-            # Convert document
-            if pipeline_options is not None:
-                docling_doc = self.converter.convert(str(doc_path), pipeline_options=pipeline_options)
-            else:
-                docling_doc = self.converter.convert(str(doc_path))
+            # Create format-specific options
+            pdf_format_option = PdfFormatOption(pipeline_options=pipeline_options)
+
+            # Create a new converter with these specific options
+            converter = DocumentConverter(
+                format_options={InputFormat.PDF: pdf_format_option}
+            )
+
+            # Convert document and unwrap result
+            result = converter.convert(str(doc_path))
+            docling_doc = result.document
 
             # Extract content based on format
             content = None

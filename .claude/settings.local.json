@@ -35,7 +35,8 @@
       "WebFetch(domain:docling-project.github.io)",
       "WebFetch(domain:docsray.dev)",
       "Bash(xargs ls:*)",
-      "Read(//workspace/.pyenv_mirror/user/current/lib/python3.12/site-packages/**)"
+      "Read(//workspace/.pyenv_mirror/user/current/lib/python3.12/site-packages/**)",
+      "Bash(python3:*)"
     ],
     "deny": []
   }

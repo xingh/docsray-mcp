@@ -140,7 +140,11 @@ class TestIBMDoclingProvider:
             mock_docling_doc.pages = [MagicMock(), MagicMock()]  # 2 pages
             mock_docling_doc.title = "Test Document"
             mock_docling_doc.language = "en"
-            mock_converter.convert.return_value = mock_docling_doc
+
+            # Mock ConversionResult with .document attribute
+            mock_result = MagicMock()
+            mock_result.document = mock_docling_doc
+            mock_converter.convert.return_value = mock_result
 
             # Mock file operations
             with patch('docsray.providers.ibm_docling.IBMDoclingProvider._ensure_local_document') as mock_ensure:
@@ -172,7 +176,11 @@ class TestIBMDoclingProvider:
             mock_docling_doc = MagicMock()
             mock_docling_doc.pages = [MagicMock(), MagicMock()]
             mock_docling_doc.model_dump.return_value = {"test": "document"}
-            mock_converter.convert.return_value = mock_docling_doc
+
+            # Mock ConversionResult with .document attribute
+            mock_result = MagicMock()
+            mock_result.document = mock_docling_doc
+            mock_converter.convert.return_value = mock_result
 
             with patch('docsray.providers.ibm_docling.IBMDoclingProvider._ensure_local_document'):
                 await provider.initialize(config)
@@ -203,7 +211,11 @@ class TestIBMDoclingProvider:
             mock_docling_doc = MagicMock()
             mock_docling_doc.pages = [MagicMock()]
             mock_docling_doc.export_to_markdown.return_value = "# Test Document\n\nContent here"
-            mock_converter.convert.return_value = mock_docling_doc
+
+            # Mock ConversionResult with .document attribute
+            mock_result = MagicMock()
+            mock_result.document = mock_docling_doc
+            mock_converter.convert.return_value = mock_result
 
             with patch('docsray.providers.ibm_docling.IBMDoclingProvider._ensure_local_document'):
                 await provider.initialize(config)
@@ -228,7 +240,11 @@ class TestIBMDoclingProvider:
             mock_converter_cls.return_value = mock_converter
 
             mock_docling_doc = MagicMock()
-            mock_converter.convert.return_value = mock_docling_doc
+
+            # Mock ConversionResult with .document attribute
+            mock_result = MagicMock()
+            mock_result.document = mock_docling_doc
+            mock_converter.convert.return_value = mock_result
 
             with patch('docsray.providers.ibm_docling.IBMDoclingProvider._ensure_local_document'):
                 await provider.initialize(config)
@@ -285,7 +301,10 @@ class TestIBMDoclingProvider:
             mock_picture.bbox = {"x": 100, "y": 200, "width": 300, "height": 400}
             mock_docling_doc.pictures = [mock_picture]
 
-            mock_converter.convert.return_value = mock_docling_doc
+            # Mock ConversionResult with .document attribute
+            mock_result = MagicMock()
+            mock_result.document = mock_docling_doc
+            mock_converter.convert.return_value = mock_result
 
             with patch('docsray.providers.ibm_docling.IBMDoclingProvider._ensure_local_document'):
                 await provider.initialize(config)
