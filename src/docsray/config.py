@@ -187,7 +187,9 @@ class DocsrayConfig(BaseModel):
                 },
                 "llama_parse": {
                     "enabled": os.getenv("DOCSRAY_LLAMAPARSE_ENABLED", "false").lower() == "true",
-                    "api_key": os.getenv("DOCSRAY_LLAMAPARSE_API_KEY"),
+                    # Support both DOCSRAY_LLAMAPARSE_API_KEY (preferred) and LLAMAPARSE_API_KEY (fallback)
+                    # This allows compatibility with both Docsray-specific config and standard LlamaParse env var
+                    "api_key": os.getenv("DOCSRAY_LLAMAPARSE_API_KEY") or os.getenv("LLAMAPARSE_API_KEY"),
                     "mode": os.getenv("DOCSRAY_LLAMAPARSE_MODE", "balanced"),
                 },
                 "mimic_docsray": {

@@ -125,10 +125,17 @@ Create a `.env` file in your project:
 
 ```bash
 # For AI-powered analysis with LlamaParse
-LLAMAPARSE_API_KEY=llx-your-key-here
+# Either use the Docsray-specific env var (preferred):
+DOCSRAY_LLAMAPARSE_API_KEY=llx-your-key-here
+
+# Or use the standard LlamaParse env var (also supported):
+# LLAMAPARSE_API_KEY=llx-your-key-here
+
+# Note: DOCSRAY_LLAMAPARSE_API_KEY takes precedence if both are set
 
 # Or use environment variables
-export LLAMAPARSE_API_KEY=llx-your-key-here
+export DOCSRAY_LLAMAPARSE_API_KEY=llx-your-key-here
+# export LLAMAPARSE_API_KEY=llx-your-key-here  # Alternative
 ```
 
 Get your free LlamaParse API key at [cloud.llamaindex.ai](https://cloud.llamaindex.ai)
