@@ -14,17 +14,21 @@ Resolve common issues and optimize Docsray MCP performance with comprehensive tr
 
 **Solution:**
 ```bash
-# Check if API key is set
+# Check if API key is set (check both possible env vars)
+echo $DOCSRAY_LLAMAPARSE_API_KEY
 echo $LLAMAPARSE_API_KEY
 
 # Set API key (get from https://cloud.llamaindex.ai)
-export LLAMAPARSE_API_KEY="llx-your-key-here"
+# Use either (DOCSRAY_LLAMAPARSE_API_KEY preferred):
+export DOCSRAY_LLAMAPARSE_API_KEY="llx-your-key-here"
+# export LLAMAPARSE_API_KEY="llx-your-key-here"  # Alternative
 
 # Or add to .env file
-echo "LLAMAPARSE_API_KEY=llx-your-key-here" >> .env
+echo "DOCSRAY_LLAMAPARSE_API_KEY=llx-your-key-here" >> .env
+# echo "LLAMAPARSE_API_KEY=llx-your-key-here" >> .env  # Alternative
 
 # Verify key format (should start with 'llx-')
-if [[ $LLAMAPARSE_API_KEY == llx-* ]]; then
+if [[ $DOCSRAY_LLAMAPARSE_API_KEY == llx-* ]] || [[ $LLAMAPARSE_API_KEY == llx-* ]]; then
     echo "API key format is correct"
 else
     echo "API key should start with 'llx-'"
