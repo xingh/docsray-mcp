@@ -28,12 +28,20 @@ LlamaParse leverages advanced language models to provide:
 ### Basic Configuration
 
 ```bash
-# Set your API key
+# Set your API key using either method:
+
+# Method 1: Docsray-specific (recommended)
+export DOCSRAY_LLAMAPARSE_API_KEY="llx-your-key-here"
+
+# Method 2: Standard LlamaParse env var (also supported)
 export LLAMAPARSE_API_KEY="llx-your-key-here"
 
-# Or add to your .env file
-echo "LLAMAPARSE_API_KEY=llx-your-key-here" >> .env
+# Or add to your .env file (DOCSRAY_LLAMAPARSE_API_KEY takes precedence if both are set)
+echo "DOCSRAY_LLAMAPARSE_API_KEY=llx-your-key-here" >> .env
+# echo "LLAMAPARSE_API_KEY=llx-your-key-here" >> .env  # Alternative
 ```
+
+> **API Key Priority**: If both `DOCSRAY_LLAMAPARSE_API_KEY` and `LLAMAPARSE_API_KEY` are set, `DOCSRAY_LLAMAPARSE_API_KEY` takes precedence. This allows compatibility with both Docsray-specific and standard LlamaParse configurations.
 
 ### Advanced Configuration
 

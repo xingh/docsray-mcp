@@ -14,7 +14,9 @@ Configure Docsray using environment variables or a `.env` file in your project r
 
 ```bash
 # LlamaParse API Key (required for AI analysis)
-LLAMAPARSE_API_KEY=llx-your-key-here
+# Use either (DOCSRAY_LLAMAPARSE_API_KEY takes precedence):
+DOCSRAY_LLAMAPARSE_API_KEY=llx-your-key-here  # Preferred
+# LLAMAPARSE_API_KEY=llx-your-key-here  # Alternative (standard LlamaParse env var)
 
 # Provider enablement (PyMuPDF4LLM is always enabled)
 DOCSRAY_PYMUPDF4LLM_ENABLED=true  # Default: true
@@ -24,6 +26,8 @@ DOCSRAY_LLAMAPARSE_ENABLED=true   # Default: true if API key is present
 LLAMAPARSE_MODE=fast              # Options: fast, accurate, premium
 LLAMAPARSE_MAX_TIMEOUT=120        # Max processing timeout in seconds
 ```
+
+> **Note**: Both `DOCSRAY_LLAMAPARSE_API_KEY` and `LLAMAPARSE_API_KEY` are supported for the API key. If both are set, `DOCSRAY_LLAMAPARSE_API_KEY` takes precedence. This provides compatibility with both Docsray-specific configurations and standard LlamaParse setups.
 
 ### Performance Tuning
 
