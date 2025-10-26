@@ -160,6 +160,8 @@ Add to your Cursor settings:
 }
 ```
 
+> **Note**: You can use either `LLAMAPARSE_API_KEY` (shown above) or `DOCSRAY_LLAMAPARSE_API_KEY` in the MCP client configuration.
+
 #### For Claude Desktop
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
@@ -177,6 +179,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
   }
 }
 ```
+
+> **Note**: You can use either `LLAMAPARSE_API_KEY` (shown above) or `DOCSRAY_LLAMAPARSE_API_KEY` in the MCP client configuration.
 
 ## 📚 Usage Examples
 
