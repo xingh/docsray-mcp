@@ -96,18 +96,31 @@ pip install -e ".[dev]"
 
 ### 🐳 Docker Installation
 
+#### Option 1: Docker Hub (Recommended)
 ```bash
-# Quick start with Docker Compose
-git clone https://github.com/xingh/docsray-mcp
-cd docsray-mcp
-docker-compose up docsray-mcp
+# Pull from Docker Hub
+docker pull xingh/docsray-mcp:latest
 
-# Or run directly with Docker
-docker run -it --rm ghcr.io/xingh/docsray-mcp:latest
+# Run in stdio mode
+docker run -it --rm xingh/docsray-mcp:latest
 
-# HTTP mode for web integrations
-docker run -it --rm -p 3000:3000 -e DOCSRAY_TRANSPORT=http ghcr.io/xingh/docsray-mcp:latest
+# Run in HTTP mode
+docker run -it --rm -p 3000:3000 -e DOCSRAY_TRANSPORT=http xingh/docsray-mcp:latest
 ```
+
+#### Option 2: GitHub Container Registry
+```bash
+# Pull from GHCR
+docker pull ghcr.io/xingh/docsray-mcp:latest
+
+# Run (same commands as above, just different image)
+docker run -it --rm ghcr.io/xingh/docsray-mcp:latest
+```
+
+**Available Tags:**
+- `latest` - Latest stable release
+- `0.6.0` - Specific version
+- `dev` - Development builds from main branch
 
 **Development with VS Code DevContainer:**
 1. Install the "Dev Containers" extension

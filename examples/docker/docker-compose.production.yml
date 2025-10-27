@@ -5,7 +5,9 @@ version: '3.8'
 
 services:
   docsray-mcp:
-    image: ghcr.io/xingh/docsray-mcp:latest
+    # Choose your preferred registry:
+    image: xingh/docsray-mcp:latest           # Docker Hub
+    # image: ghcr.io/xingh/docsray-mcp:latest # GitHub Container Registry
     container_name: docsray-mcp-prod
     restart: unless-stopped
     
@@ -63,7 +65,9 @@ services:
 
   # HTTP endpoint for web integrations
   docsray-http:
-    image: ghcr.io/xingh/docsray-mcp:latest
+    # Choose your preferred registry:
+    image: xingh/docsray-mcp:latest           # Docker Hub
+    # image: ghcr.io/xingh/docsray-mcp:latest # GitHub Container Registry
     container_name: docsray-http-prod
     restart: unless-stopped
     
