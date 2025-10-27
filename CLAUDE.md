@@ -133,7 +133,7 @@ docsray list-providers
 - Provider configs: Enable/disable providers via `DOCSRAY_<PROVIDER>_ENABLED`
 - Transport config: `DOCSRAY_TRANSPORT_TYPE` (stdio/http)
 - Performance: Caching, timeouts, concurrent requests
-- API keys: `LLAMAPARSE_API_KEY`, `MISTRAL_API_KEY`, etc.
+- API keys: `DOCSRAY_LLAMAPARSE_API_KEY` (or `LLAMAPARSE_API_KEY` as fallback), `DOCSRAY_MISTRAL_API_KEY`, etc.
 
 ### Server Implementation
 

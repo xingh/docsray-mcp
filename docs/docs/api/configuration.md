@@ -63,7 +63,8 @@ Complete reference for all configuration options, environment variables, and pro
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
 | `DOCSRAY_LLAMAPARSE_ENABLED` | boolean | `true` | Enable LlamaParse provider |
-| `LLAMAPARSE_API_KEY` | string | `null` | **Required** API key (llx-*) |
+| `DOCSRAY_LLAMAPARSE_API_KEY` | string | `null` | **Preferred** API key (llx-*) - takes precedence |
+| `LLAMAPARSE_API_KEY` | string | `null` | **Alternative** API key (llx-*) - used if DOCSRAY_LLAMAPARSE_API_KEY not set |
 | `LLAMAPARSE_BASE_URL` | string | `https://api.cloud.llamaindex.ai` | API base URL |
 | `LLAMAPARSE_MODE` | string | `fast` | Processing mode (fast, accurate, premium) |
 | `LLAMAPARSE_MAX_TIMEOUT` | integer | `120` | Max processing timeout (seconds) |
@@ -72,6 +73,8 @@ Complete reference for all configuration options, environment variables, and pro
 | `LLAMAPARSE_PARSING_INSTRUCTION` | string | `""` | Global parsing instructions |
 | `LLAMAPARSE_INVALIDATE_CACHE` | boolean | `false` | Force cache refresh |
 | `LLAMAPARSE_DO_NOT_CACHE` | boolean | `false` | Disable caching entirely |
+
+**API Key Configuration**: You can use either `DOCSRAY_LLAMAPARSE_API_KEY` (Docsray-specific) or `LLAMAPARSE_API_KEY` (standard LlamaParse). If both are set, `DOCSRAY_LLAMAPARSE_API_KEY` takes precedence. This allows compatibility with both Docsray-specific configurations and standard LlamaParse setups.
 
 ### Advanced Cache Settings
 

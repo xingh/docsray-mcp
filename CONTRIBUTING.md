@@ -32,8 +32,9 @@ Thank you for your interest in contributing to Docsray MCP! This document provid
 4. **Set Up Environment Variables**
    ```bash
    cp .env.example .env  # If .env.example exists
-   # Add your API keys for testing:
-   echo "LLAMAPARSE_API_KEY=llx-your-key-here" >> .env
+   # Add your API keys for testing (use either env var):
+   echo "DOCSRAY_LLAMAPARSE_API_KEY=llx-your-key-here" >> .env
+   # Or: echo "LLAMAPARSE_API_KEY=llx-your-key-here" >> .env
    ```
 
 5. **Verify Installation**

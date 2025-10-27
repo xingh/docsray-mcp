@@ -41,16 +41,22 @@ PyMuPDF4LLM is included and works out of the box:
 For comprehensive extraction with AI analysis:
 
 1. Get your API key from [LlamaIndex Cloud](https://cloud.llamaindex.ai)
-2. Set the environment variable:
+2. Set the environment variable (use either):
 
 ```bash
+# Preferred: Docsray-specific
+export DOCSRAY_LLAMAPARSE_API_KEY="your-api-key-here"
+
+# Alternative: Standard LlamaParse
 export LLAMAPARSE_API_KEY="your-api-key-here"
 ```
 
 Or add to your `.env` file:
 
 ```env
-LLAMAPARSE_API_KEY=your-api-key-here
+# DOCSRAY_LLAMAPARSE_API_KEY takes precedence if both are set
+DOCSRAY_LLAMAPARSE_API_KEY=your-api-key-here
+# LLAMAPARSE_API_KEY=your-api-key-here  # Alternative
 ```
 
 ## Configure Claude Desktop

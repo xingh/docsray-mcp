@@ -160,3 +160,38 @@ class TestDocsrayConfig:
         assert config.providers.llama_parse.enabled is True
         assert config.providers.llama_parse.api_key == "test-llama-key"
         assert config.providers.llama_parse.mode == "fast"
+    
+    @patch.dict(os.environ, {
+        "DOCSRAY_LLAMAPARSE_ENABLED": "true",
+        "LLAMAPARSE_API_KEY": "standard-key"
+    }, clear=True)
+    def test_llamaparse_api_key_fallback_to_standard(self):
+        """Test that LLAMAPARSE_API_KEY is used when DOCSRAY_LLAMAPARSE_API_KEY is not set."""
+        config = DocsrayConfig.from_env()
+        
+        assert config.providers.llama_parse.enabled is True
+        assert config.providers.llama_parse.api_key == "standard-key"
+    
+    @patch.dict(os.environ, {
+        "DOCSRAY_LLAMAPARSE_ENABLED": "true",
+        "DOCSRAY_LLAMAPARSE_API_KEY": "docsray-key",
+        "LLAMAPARSE_API_KEY": "standard-key"
+    }, clear=True)
+    def test_llamaparse_api_key_precedence(self):
+        """Test that DOCSRAY_LLAMAPARSE_API_KEY takes precedence over LLAMAPARSE_API_KEY."""
+        config = DocsrayConfig.from_env()
+        
+        assert config.providers.llama_parse.enabled is True
+        # DOCSRAY_LLAMAPARSE_API_KEY should take precedence
+        assert config.providers.llama_parse.api_key == "docsray-key"
+    
+    @patch.dict(os.environ, {
+        "DOCSRAY_LLAMAPARSE_ENABLED": "true"
+    }, clear=True)
+    def test_llamaparse_api_key_none_when_both_missing(self):
+        """Test that api_key is None when neither env var is set."""
+        config = DocsrayConfig.from_env()
+        
+        assert config.providers.llama_parse.enabled is True
+        assert config.providers.llama_parse.api_key is None
+        assert config.providers.llama_parse.mode == "fast"

@@ -52,7 +52,10 @@ Key configuration options:
 
 ```bash
 # LlamaParse API key for AI features (optional)
-LLAMAPARSE_API_KEY=llx-your-key-here
+# You can use either:
+DOCSRAY_LLAMAPARSE_API_KEY=llx-your-key-here  # Preferred (Docsray-specific)
+# LLAMAPARSE_API_KEY=llx-your-key-here  # Alternative (standard LlamaParse env var)
+# Note: DOCSRAY_LLAMAPARSE_API_KEY takes precedence if both are set
 
 # Transport mode
 DOCSRAY_TRANSPORT=stdio  # or http
@@ -79,7 +82,6 @@ DOCSRAY_MIMIC_HYBRID_OCR=true
 
 # API keys (if using AI providers)
 DOCSRAY_MISTRAL_API_KEY=your-key
-DOCSRAY_LLAMAPARSE_API_KEY=your-key
 ```
 
 ## Running the Server
