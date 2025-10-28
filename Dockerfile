@@ -26,6 +26,7 @@ WORKDIR /build
 COPY pyproject.toml ./
 COPY README.md ./
 COPY LICENSE ./
+COPY src/ ./src/
 
 # Create virtual environment
 RUN python -m venv /opt/venv
