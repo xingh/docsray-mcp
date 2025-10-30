@@ -4,6 +4,7 @@
 version: '3.8'
 
 services:
+  docsray-http:
     build:
       context: .
       dockerfile: Dockerfile
