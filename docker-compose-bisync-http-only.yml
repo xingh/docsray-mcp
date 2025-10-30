@@ -1,0 +1,50 @@
+# Docker Compose for Docsray MCP Server
+# Production and development configurations
+
+version: '3.8'
+
+services:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: docsray-http
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DOCSRAY_TRANSPORT=http
+      - DOCSRAY_HTTP_HOST=0.0.0.0
+      - DOCSRAY_HTTP_PORT=3000
+      - DOCSRAY_LOG_LEVEL=INFO
+      - DOCSRAY_PYMUPDF_ENABLED=true
+      - DOCSRAY_CACHE_ENABLED=true
+    volumes:
+      - docsray-cache:/app/cache
+      - docsray-logs:/app/logs
+      - docsray-data:/app/data
+      - '/home/dev/workspace:/app/workspace'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - docsray-network
+
+networks:
+  docsray-network:
+    driver: bridge
+    name: docsray-network
+
+volumes:
+  docsray-cache:
+    driver: local
+    name: docsray-cache
+  docsray-logs:
+    driver: local
+    name: docsray-logs
+  docsray-data:
+    driver: local
+    name: docsray-data
